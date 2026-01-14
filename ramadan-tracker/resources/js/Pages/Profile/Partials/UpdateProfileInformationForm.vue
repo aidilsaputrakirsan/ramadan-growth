@@ -21,12 +21,12 @@ const form = useForm({
 <template>
     <section>
         <header>
-            <h2 class="text-lg font-medium text-gray-900">
-                Profile Information
+            <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <span>📝</span> Informasi Profil
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600">
-                Update your account's profile information and email address.
+            <p class="mt-1 text-sm text-gray-500">
+                Ubah informasi profil dan alamat email akun Anda.
             </p>
         </header>
 
@@ -35,12 +35,12 @@ const form = useForm({
             class="mt-6 space-y-6"
         >
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="name" value="Nama" />
 
                 <TextInput
                     id="name"
                     type="text"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-xl shadow-sm"
                     v-model="form.name"
                     required
                     autofocus
@@ -56,7 +56,7 @@ const form = useForm({
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-xl shadow-sm"
                     v-model="form.email"
                     required
                     autocomplete="username"
@@ -67,27 +67,32 @@ const form = useForm({
 
             <div v-if="mustVerifyEmail && user.email_verified_at === null">
                 <p class="mt-2 text-sm text-gray-800">
-                    Your email address is unverified.
+                    Alamat email Anda belum diverifikasi.
                     <Link
                         :href="route('verification.send')"
                         method="post"
                         as="button"
-                        class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
                     >
-                        Click here to re-send the verification email.
+                        Klik di sini untuk mengirim ulang email verifikasi.
                     </Link>
                 </p>
 
                 <div
                     v-show="status === 'verification-link-sent'"
-                    class="mt-2 text-sm font-medium text-green-600"
+                    class="mt-2 text-sm font-medium text-emerald-600"
                 >
-                    A new verification link has been sent to your email address.
+                    Link verifikasi baru telah dikirim ke alamat email Anda.
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+                <PrimaryButton 
+                    :disabled="form.processing"
+                    class="bg-emerald-600 hover:bg-emerald-700 rounded-xl px-6 py-2.5 shadow-lg shadow-emerald-100"
+                >
+                    Simpan Perubahan
+                </PrimaryButton>
 
                 <Transition
                     enter-active-class="transition ease-in-out"
@@ -97,9 +102,9 @@ const form = useForm({
                 >
                     <p
                         v-if="form.recentlySuccessful"
-                        class="text-sm text-gray-600"
+                        class="text-sm text-emerald-600 font-medium"
                     >
-                        Saved.
+                        Tersimpan! ✅
                     </p>
                 </Transition>
             </div>

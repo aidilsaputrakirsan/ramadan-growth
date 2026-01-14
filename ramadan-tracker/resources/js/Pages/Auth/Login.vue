@@ -76,22 +76,25 @@ const submit = () => {
                 </label>
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                    Forgot your password?
-                </Link>
+            <div class="mt-6 flex items-center justify-between">
+                <span class="text-xs text-gray-400">
+                    Lupa password? Hubungi Admin untuk reset.
+                </span>
 
                 <PrimaryButton
-                    class="ms-4"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
+                    class="bg-emerald-600 hover:bg-emerald-700"
                 >
-                    Log in
+                    Masuk
                 </PrimaryButton>
+            </div>
+
+            <div class="mt-6 text-center">
+                <span class="text-sm text-gray-500">Belum punya akun?</span>
+                <Link :href="route('register')" class="ml-1 text-sm font-medium text-emerald-600 hover:text-emerald-700">
+                    Daftar Sekarang
+                </Link>
             </div>
         </form>
     </GuestLayout>
