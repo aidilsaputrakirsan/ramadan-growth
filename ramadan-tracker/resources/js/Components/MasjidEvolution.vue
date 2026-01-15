@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { Vue3Lottie } from 'vue3-lottie';
 
 const props = defineProps<{
     stage: number;
@@ -7,33 +8,34 @@ const props = defineProps<{
 }>();
 
 const stageData = computed(() => {
-    const stages: Record<number, { label: string; color: string; bgGradient: string; image: string; description: string }> = {
+    // Menggunakan Lottie Faisal Mosque yang sudah didownload
+    const stages: Record<number, { label: string; color: string; bgGradient: string; lottie: string; description: string }> = {
         1: { 
             label: 'PONDASI', 
             color: 'text-orange-600', 
             bgGradient: 'from-orange-50 to-amber-50',
-            image: '/images/masjid/stage-1.png',
+            lottie: '/lottie/Faisal-Mosque.json',
             description: 'Memulai dengan niat yang kuat...'
         },
         2: { 
             label: 'STRUKTUR', 
             color: 'text-emerald-600', 
             bgGradient: 'from-emerald-50 to-teal-50',
-            image: '/images/masjid/stage-2.png',
+            lottie: '/lottie/Faisal-Mosque.json',
             description: 'Membangun keistiqomahan diri.'
         },
         3: { 
             label: 'KUBAH', 
             color: 'text-teal-700', 
             bgGradient: 'from-teal-50 to-cyan-50',
-            image: '/images/masjid/stage-3.png',
+            lottie: '/lottie/Faisal-Mosque.json',
             description: 'Menuju puncak keberkahan.'
         },
         4: { 
             label: 'SEMPURNA', 
             color: 'text-emerald-800', 
             bgGradient: 'from-emerald-100 to-green-50',
-            image: '/images/masjid/stage-4.png',
+            lottie: '/lottie/Faisal-Mosque.json',
             description: 'Masjid megah, hati yang tenang.'
         },
     };
@@ -68,10 +70,11 @@ const progressPercent = computed(() => {
             
             <transition name="stage-change" mode="out-in">
                 <div :key="stage" class="relative z-10 w-full max-w-sm flex items-center justify-center">
-                    <img 
-                        :src="stageData.image" 
-                        :alt="`Masjid Stage ${stage}`"
-                        class="w-full h-auto object-contain drop-shadow-2xl animate-float"
+                    <Vue3Lottie
+                        :animationLink="stageData.lottie"
+                        :loop="true"
+                        :autoPlay="true"
+                        class="w-full h-auto drop-shadow-2xl"
                     />
                 </div>
             </transition>
