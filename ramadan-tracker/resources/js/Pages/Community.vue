@@ -3,12 +3,21 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { PageProps, LeaderboardUser } from '@/types';
 import LeaderboardRow from '@/Components/LeaderboardRow.vue';
+import LeaderboardChart from '@/Components/LeaderboardChart.vue';
 import Modal from '@/Components/Modal.vue';
 import { ref } from 'vue';
 import axios from 'axios';
 
+interface Top5User {
+    id: number;
+    name: string;
+    perfect_days_count: number;
+    total_sunnah: number;
+}
+
 defineProps<{
     leaderboard: LeaderboardUser[];
+    top5Sunnah: Top5User[];
 }>();
 
 const page = usePage<PageProps>();
@@ -50,9 +59,7 @@ const closeUserModal = () => {
                 <h2 class="text-xl font-bold leading-tight text-gray-800 flex items-center gap-2">
                     <span>🏆</span> Klasemen
                 </h2>
-                 <div class="text-sm font-medium text-emerald-600">
-                    Ramadan Growth Community
-                </div>
+                 
             </div>
         </template>
 
@@ -61,13 +68,18 @@ const closeUserModal = () => {
                 
                 <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-6 text-center mb-8 text-white shadow-lg relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')]"></div>
-                    
+
                     <h3 class="text-xl font-bold mb-2 relative z-10">
                         Fastabiqul Khairat 🚀
                     </h3>
                     <p class="text-emerald-50 text-sm relative z-10 italic">
                         "Maka berlomba-lombalah kamu dalam berbuat kebaikan." (QS. Al-Baqarah: 148)
                     </p>
+                </div>
+
+                <!-- Top 5 Sunnah Chart -->
+                <div class="mb-8">
+                    <LeaderboardChart :users="top5Sunnah" />
                 </div>
 
                 <div class="space-y-1">
@@ -106,23 +118,19 @@ const closeUserModal = () => {
                 
                 <div v-else-if="selectedUserStats">
                     <div class="text-center mb-6">
-                        <div class="text-4xl mb-2">
-                             {{ 
-                                selectedUserStats.user.masjid_stage === 1 ? '🏗️' : 
-                                selectedUserStats.user.masjid_stage === 2 ? '🧱' : 
-                                selectedUserStats.user.masjid_stage === 3 ? '🕌' : '✨' 
-                            }}
+                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
+                            <span class="text-2xl text-white font-bold">{{ selectedUserStats.user.name?.charAt(0)?.toUpperCase() }}</span>
                         </div>
                         <h2 class="text-2xl font-bold text-gray-800">
                             {{ selectedUserStats.user.name }}
                         </h2>
                         <div class="text-emerald-600 font-medium">
-                            {{ selectedUserStats.user.perfect_days }} Perfect Days
+                            {{ selectedUserStats.user.perfect_days }} Hari Sempurna
                         </div>
                     </div>
-                    
+
                     <h3 class="text-sm uppercase font-bold text-gray-400 tracking-wider mb-4 border-b pb-2">
-                        Statistik Ibadah (Top Activities)
+                        Statistik Ibadah Sunnah
                     </h3>
                     
                     <div class="space-y-3">

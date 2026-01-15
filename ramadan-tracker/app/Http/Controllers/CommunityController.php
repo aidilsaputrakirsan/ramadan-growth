@@ -15,25 +15,44 @@ class CommunityController extends Controller
      */
     public function index(Request $request): \Inertia\Response
     {
+        $sunnahKeys = array_keys(\App\Services\IbadahService::SUNNAH);
+
         $users = \App\Models\User::query()
             ->withCount(['dailyLogs as perfect_days_count' => function ($query) {
                 $query->where('is_perfect_day', true);
             }])
+            ->with('dailyLogs')
             ->orderByDesc('perfect_days_count')
             ->orderBy('name')
             ->limit(50)
             ->get()
-            ->map(function ($user) {
+            ->map(function ($user) use ($sunnahKeys) {
+                // Hitung total sunnah completed
+                $totalSunnah = 0;
+                foreach ($user->dailyLogs as $log) {
+                    if (is_array($log->tasks_completed)) {
+                        foreach ($sunnahKeys as $key) {
+                            if (isset($log->tasks_completed[$key]) && $log->tasks_completed[$key] === true) {
+                                $totalSunnah++;
+                            }
+                        }
+                    }
+                }
+
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
                     'perfect_days_count' => $user->perfect_days_count,
-                    'masjid_stage' => $this->calculator->getMasjidStage($user->perfect_days_count),
+                    'total_sunnah' => $totalSunnah,
                 ];
             });
 
+        // Top 5 untuk chart (berdasarkan total sunnah)
+        $top5Sunnah = $users->sortByDesc('total_sunnah')->take(5)->values();
+
         return \Inertia\Inertia::render('Community', [
             'leaderboard' => $users,
+            'top5Sunnah' => $top5Sunnah,
         ]);
     }
 
@@ -57,22 +76,21 @@ class CommunityController extends Controller
         }
         
         arsort($stats);
-        
-        // Map keys to readable labels
+
+        // Map keys to readable labels - HANYA SUNNAH untuk leaderboard
         $result = [];
-        $wajib = \App\Services\IbadahService::WAJIB;
         $sunnah = \App\Services\IbadahService::SUNNAH;
-        $allDefinitions = array_merge($wajib, $sunnah);
 
         foreach ($stats as $key => $count) {
-             if (isset($allDefinitions[$key])) {
-                 $result[] = [
-                     'key' => $key,
-                     'label' => $allDefinitions[$key]['label'],
-                     'icon' => $allDefinitions[$key]['icon'],
-                     'count' => $count
-                 ];
-             }
+            // Hanya tampilkan sunnah, skip wajib
+            if (isset($sunnah[$key])) {
+                $result[] = [
+                    'key' => $key,
+                    'label' => $sunnah[$key]['label'],
+                    'icon' => $sunnah[$key]['icon'],
+                    'count' => $count
+                ];
+            }
         }
 
         $perfectDays = $user->dailyLogs()->where('is_perfect_day', true)->count();
@@ -82,7 +100,6 @@ class CommunityController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'perfect_days' => $perfectDays,
-                'masjid_stage' => $this->calculator->getMasjidStage($perfectDays)
             ],
             'stats' => $result
         ]);

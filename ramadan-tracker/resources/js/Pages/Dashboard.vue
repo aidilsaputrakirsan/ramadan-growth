@@ -3,9 +3,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { PageProps } from '@/types';
 import CheckInToggle from '@/Components/CheckInToggle.vue';
-import MasjidEvolution from '@/Components/MasjidEvolution.vue';
+import IbadahProgressChart from '@/Components/IbadahProgressChart.vue';
 import StreakCounter from '@/Components/StreakCounter.vue';
-import { watch } from 'vue';
+import { watch, computed } from 'vue';
 
 const page = usePage<PageProps>();
 
@@ -49,6 +49,25 @@ const autoSave = () => {
 watch(() => form.tasks_completed, () => {
     autoSave();
 }, { deep: true });
+
+// Computed for chart progress
+const wajibKeys = ibadahGroups.wajib.map(i => i.key);
+const sunnahKeys = ibadahGroups.sunnah.map(i => i.key);
+
+const wajibCompleted = computed(() => {
+    return wajibKeys.filter(key => form.tasks_completed[key]).length;
+});
+
+const sunnahCompleted = computed(() => {
+    return sunnahKeys.filter(key => form.tasks_completed[key]).length;
+});
+
+// Progress hari ini dihitung dari wajib saja (2 item)
+const todayProgress = computed(() => {
+    const total = wajibKeys.length; // hanya wajib (2)
+    const completed = wajibKeys.filter(key => form.tasks_completed[key]).length;
+    return Math.round((completed / total) * 100);
+});
 </script>
 
 <template>
@@ -69,20 +88,22 @@ watch(() => form.tasks_completed, () => {
         <div class="py-6 sm:py-12">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
                 
-                <!-- Top Section: Masjid & Stats -->
+                <!-- Top Section: Progress Chart & Stats -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Masjid Evolution -->
+                    <!-- Ibadah Progress Chart -->
                     <div class="md:col-span-2">
-                        <MasjidEvolution 
-                            :stage="page.props.masjidStage || 1" 
+                        <IbadahProgressChart
                             :perfect-days="page.props.totalPerfectDays || 0"
+                            :today-progress="todayProgress"
+                            :wajib-completed="wajibCompleted"
+                            :sunnah-completed="sunnahCompleted"
                         />
                     </div>
 
                     <!-- Stats Column -->
                     <div class="flex flex-col gap-4">
                         <StreakCounter :count="page.props.currentStreak || 0" />
-                        
+
                         <div class="bg-white p-6 rounded-2xl border-2 border-emerald-50 shadow-sm flex-1 flex flex-col justify-center items-center text-center hover:border-emerald-100 transition-colors">
                             <div class="text-xs font-bold uppercase tracking-widest text-emerald-600 mb-2">
                                 TOTAL PERFECT DAYS
@@ -91,7 +112,7 @@ watch(() => form.tasks_completed, () => {
                                 {{ page.props.totalPerfectDays || 0 }}
                             </div>
                             <div class="text-xs text-gray-400">
-                                Keep building your masjid!
+                                Terus semangat ibadahmu!
                             </div>
                         </div>
                     </div>

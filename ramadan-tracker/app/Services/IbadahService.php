@@ -57,15 +57,13 @@ class IbadahService
     ];
 
     /**
-     * Get tasks required for a "Perfect Day" (Masjid Building).
-     * Currently: Wajib + Top Sunnahs (Tilawah, Sedekah, Tarawih? -> Let's keep original 4 for now + maybe Tarawih)
-     * Let's sticking to User's "Syarat sudah dijelaskan" -> The original 4.
+     * Get tasks required for a "Perfect Day".
+     * Perfect day = hanya ibadah WAJIB yang terpenuhi.
+     * Sunnah tidak mempengaruhi perfect day, tapi untuk leaderboard.
      */
     public const REQUIRED_FOR_PERFECT = [
         'shalat_5_waktu',
         'puasa',
-        'tilawah_quran',
-        'sedekah',
     ];
 
     public function getWajibList(): array

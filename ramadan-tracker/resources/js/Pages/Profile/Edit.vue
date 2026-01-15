@@ -3,12 +3,16 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
+import { PageProps } from '@/types';
 
 defineProps<{
     mustVerifyEmail?: boolean;
     status?: string;
 }>();
+
+const page = usePage<PageProps>();
+const isAdmin = page.props.auth.user.is_admin ?? false;
 </script>
 
 <template>
@@ -41,7 +45,9 @@ defineProps<{
                     <UpdatePasswordForm class="max-w-xl" />
                 </div>
 
+                <!-- Hanya tampilkan untuk admin -->
                 <div
+                    v-if="isAdmin"
                     class="bg-white p-6 shadow-sm border border-red-50 rounded-2xl sm:p-8"
                 >
                     <DeleteUserForm class="max-w-xl" />

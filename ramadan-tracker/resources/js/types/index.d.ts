@@ -26,7 +26,7 @@ export interface LeaderboardUser {
     id: number;
     name: string;
     perfect_days_count: number;
-    masjid_stage: number;
+    total_sunnah: number;
 }
 
 export type PageProps<

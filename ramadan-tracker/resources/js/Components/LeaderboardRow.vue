@@ -25,16 +25,6 @@ const medal = computed(() => {
         default: return props.rank;
     }
 });
-
-const stageIcon = computed(() => {
-    switch (props.user.masjid_stage) {
-        case 1: return '🏗️';
-        case 2: return '🧱';
-        case 3: return '🕌';
-        case 4: return '✨';
-        default: return '❓';
-    }
-});
 </script>
 
 <template>
@@ -66,19 +56,32 @@ const stageIcon = computed(() => {
                 </h3>
                 <span v-if="isCurrentUser" class="text-[9px] uppercase font-bold bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full shadow-sm">You</span>
             </div>
-            <div class="text-xs text-gray-500 flex items-center gap-1.5 font-medium">
-                <span class="bg-gray-100 px-1.5 py-0.5 rounded text-[10px] tracking-wide text-gray-600 uppercase">Stage {{ user.masjid_stage }}</span>
-                <span>{{ stageIcon }}</span>
+            <div class="text-xs text-gray-400 font-medium">
+                {{ user.perfect_days_count }} hari sempurna
             </div>
         </div>
 
         <!-- Score -->
-        <div class="text-right flex-shrink-0 z-0">
-            <div class="font-black text-2xl sm:text-3xl text-emerald-600 leading-none tracking-tight">
-                {{ user.perfect_days_count }}
+        <div class="text-right flex-shrink-0 z-0 flex items-center gap-3">
+            <!-- Total Sunnah -->
+            <div class="text-center">
+                <div class="font-bold text-lg sm:text-xl text-orange-500 leading-none tracking-tight">
+                    {{ user.total_sunnah }}
+                </div>
+                <div class="text-[8px] sm:text-[9px] font-semibold text-gray-400 uppercase tracking-wide mt-0.5">
+                    Sunnah
+                </div>
             </div>
-            <div class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">
-                Perfect Days
+            <!-- Divider -->
+            <div class="w-px h-8 bg-gray-200"></div>
+            <!-- Perfect Days -->
+            <div class="text-center">
+                <div class="font-black text-2xl sm:text-3xl text-emerald-600 leading-none tracking-tight">
+                    {{ user.perfect_days_count }}
+                </div>
+                <div class="text-[8px] sm:text-[9px] font-bold text-gray-400 uppercase tracking-wide mt-0.5">
+                    Perfect
+                </div>
             </div>
         </div>
     </div>

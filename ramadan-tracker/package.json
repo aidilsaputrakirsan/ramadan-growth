@@ -23,6 +23,8 @@
         "vue-tsc": "^2.0.24"
     },
     "dependencies": {
+        "apexcharts": "^5.3.6",
+        "vue3-apexcharts": "^1.10.0",
         "vue3-lottie": "^3.3.1"
     }
 }
