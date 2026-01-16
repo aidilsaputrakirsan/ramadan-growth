@@ -106,7 +106,7 @@ const todayProgress = computed(() => {
 
                         <div class="bg-white p-6 rounded-2xl border-2 border-emerald-50 shadow-sm flex-1 flex flex-col justify-center items-center text-center hover:border-emerald-100 transition-colors">
                             <div class="text-xs font-bold uppercase tracking-widest text-emerald-600 mb-2">
-                                TOTAL PERFECT DAYS
+                                Total Hari Sempurna
                             </div>
                             <div class="text-5xl font-black text-gray-800 mb-2">
                                 {{ page.props.totalPerfectDays || 0 }}
@@ -140,10 +140,10 @@ const todayProgress = computed(() => {
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                                Saving...
+                                Menyimpan...
                             </span>
                              <span v-else-if="form.recentlySuccessful" class="text-sm text-emerald-500 font-medium flex items-center gap-1">
-                                <span>✓</span> Saved
+                                <span>✓</span> Tersimpan
                             </span>
                         </transition>
                     </div>

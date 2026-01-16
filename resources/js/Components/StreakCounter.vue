@@ -16,7 +16,7 @@ const fireIntensity = computed(() => {
 <template>
     <div class="group flex flex-col items-center justify-center p-3 bg-white border-2 border-orange-100 rounded-2xl shadow-sm hover:shadow-md hover:border-orange-200 transition-all duration-300">
         <span class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-1 group-hover:text-orange-500 transition-colors">
-            CURRENT STREAK
+            Streak Saat Ini
         </span>
         <div class="flex items-center gap-2">
             <span class="text-3xl font-black text-gray-800 tabular-nums leading-none tracking-tight">
