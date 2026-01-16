@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { PageProps, LeaderboardUser } from '@/types';
 import Modal from '@/Components/Modal.vue';
+import UserAvatar from '@/Components/UserAvatar.vue';
 import { ref } from 'vue';
 import axios from 'axios';
 
@@ -104,10 +105,8 @@ const getRankBadge = (rank: number) => {
             <div class="flex items-end justify-center gap-2 py-4" v-if="leaderboard.length >= 3">
                 <!-- 2nd Place -->
                 <div class="flex flex-col items-center">
-                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-gray-400 to-slate-500 flex items-center justify-center text-white font-bold text-lg shadow-lg mb-2">
-                        {{ leaderboard[1]?.name?.charAt(0)?.toUpperCase() }}
-                    </div>
-                    <div class="glass-card px-3 py-2 text-center min-w-[80px]">
+                    <UserAvatar :user="leaderboard[1]" size="lg" />
+                    <div class="glass-card px-3 py-2 text-center min-w-[80px] mt-2">
                         <div class="text-lg">🥈</div>
                         <div class="text-white text-xs font-medium truncate max-w-[70px]">{{ leaderboard[1]?.name }}</div>
                         <div class="text-emerald-400 text-xs font-bold">{{ leaderboard[1]?.perfect_days_count }} hari</div>
@@ -116,10 +115,19 @@ const getRankBadge = (rank: number) => {
                 
                 <!-- 1st Place -->
                 <div class="flex flex-col items-center -mt-4">
-                    <div class="w-18 h-18 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-yellow-500/30 mb-2 ring-4 ring-yellow-400/30" style="width: 72px; height: 72px;">
-                        {{ leaderboard[0]?.name?.charAt(0)?.toUpperCase() }}
+                    <div class="relative">
+                        <UserAvatar :user="leaderboard[0]" size="xl" />
+                        <div class="absolute -top-2 -right-2">
+                            <lord-icon
+                                src="https://cdn.lordicon.com/oqdmuxru.json"
+                                trigger="loop"
+                                delay="1500"
+                                colors="primary:#fbbf24"
+                                style="width:28px;height:28px">
+                            </lord-icon>
+                        </div>
                     </div>
-                    <div class="glass-card px-4 py-3 text-center min-w-[90px] border-yellow-500/30">
+                    <div class="glass-card px-4 py-3 text-center min-w-[90px] border-yellow-500/30 mt-2">
                         <div class="text-2xl">🥇</div>
                         <div class="text-white text-sm font-bold truncate max-w-[80px]">{{ leaderboard[0]?.name }}</div>
                         <div class="text-emerald-400 text-sm font-bold">{{ leaderboard[0]?.perfect_days_count }} hari</div>
@@ -128,10 +136,8 @@ const getRankBadge = (rank: number) => {
                 
                 <!-- 3rd Place -->
                 <div class="flex flex-col items-center">
-                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white font-bold text-lg shadow-lg mb-2">
-                        {{ leaderboard[2]?.name?.charAt(0)?.toUpperCase() }}
-                    </div>
-                    <div class="glass-card px-3 py-2 text-center min-w-[80px]">
+                    <UserAvatar :user="leaderboard[2]" size="lg" />
+                    <div class="glass-card px-3 py-2 text-center min-w-[80px] mt-2">
                         <div class="text-lg">🥉</div>
                         <div class="text-white text-xs font-medium truncate max-w-[70px]">{{ leaderboard[2]?.name }}</div>
                         <div class="text-emerald-400 text-xs font-bold">{{ leaderboard[2]?.perfect_days_count }} hari</div>
@@ -158,9 +164,7 @@ const getRankBadge = (rank: number) => {
                     </div>
                     
                     <!-- Avatar -->
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold">
-                        {{ user.name?.charAt(0)?.toUpperCase() }}
-                    </div>
+                    <UserAvatar :user="user" size="md" />
                     
                     <!-- Info -->
                     <div class="flex-1 text-left">
@@ -213,9 +217,7 @@ const getRankBadge = (rank: number) => {
                     <!-- User Header -->
                     <div class="text-center mb-6">
                         <div class="relative inline-block">
-                            <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/30">
-                                <span class="text-3xl text-white font-bold">{{ selectedUserStats.user.name?.charAt(0)?.toUpperCase() }}</span>
-                            </div>
+                            <UserAvatar :user="selectedUserStats.user" size="xl" />
                             <div class="absolute -bottom-1 -right-1">
                                 <lord-icon
                                     src="https://cdn.lordicon.com/egiwmiit.json"

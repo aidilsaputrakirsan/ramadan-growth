@@ -42,6 +42,7 @@ class CommunityController extends Controller
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
+                    'avatar' => $user->avatar,
                     'perfect_days_count' => $user->perfect_days_count,
                     'total_sunnah' => $totalSunnah,
                 ];
@@ -99,6 +100,7 @@ class CommunityController extends Controller
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
+                'avatar' => $user->avatar,
                 'perfect_days' => $perfectDays,
             ],
             'stats' => $result

@@ -11,6 +11,46 @@ class DatabaseSeeder extends Seeder
     use WithoutModelEvents;
 
     /**
+     * Avatar styles untuk random assignment
+     */
+    private array $avatarStyles = [
+        'lorelei',
+        'lorelei-neutral', 
+        'notionists',
+        'notionists-neutral',
+        'micah',
+        'miniavs',
+        'bottts',
+        'bottts-neutral',
+        'fun-emoji',
+        'thumbs',
+        'shapes',
+        'glass',
+        'rings',
+        'pixel-art',
+        'pixel-art-neutral',
+        'identicon',
+    ];
+
+    /**
+     * Seeds untuk variasi avatar
+     */
+    private array $avatarSeeds = [
+        'happy', 'cool', 'smile', 'star', 'moon', 'sun', 'love', 'peace',
+        'ramadan', 'eid', 'blessed', 'faith', 'hope', 'joy', 'light', 'grace',
+    ];
+
+    /**
+     * Generate random avatar URL
+     */
+    private function generateAvatar(): string
+    {
+        $style = $this->avatarStyles[array_rand($this->avatarStyles)];
+        $seed = $this->avatarSeeds[array_rand($this->avatarSeeds)] . rand(1, 100);
+        return "https://api.dicebear.com/7.x/{$style}/svg?seed={$seed}&backgroundColor=transparent";
+    }
+
+    /**
      * Seed the application's database.
      */
     public function run(): void
@@ -21,66 +61,78 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@example.com',
             'password' => bcrypt('password'),
             'is_admin' => true,
+            'avatar' => 'https://api.dicebear.com/7.x/lorelei/svg?seed=admin&backgroundColor=transparent',
         ]);
 
-        // Create 20 Dummy Users with varied progress
-        $users = User::factory(20)->create();
+        // Nama-nama Islami untuk dummy users
+        $islamicNames = [
+            'Ahmad Fauzi', 'Fatimah Zahra', 'Muhammad Rizki', 'Aisyah Putri',
+            'Abdullah Rahman', 'Khadijah Sari', 'Umar Hakim', 'Maryam Dewi',
+            'Ali Akbar', 'Zainab Nur', 'Hasan Basri', 'Ruqayyah Indah',
+            'Ibrahim Malik', 'Hafsa Wulan', 'Yusuf Pratama', 'Aminah Lestari',
+            'Bilal Saputra', 'Safiya Rahma', 'Khalid Wijaya', 'Asma Cantika',
+            'Hamza Putra', 'Sumaya Fitri', 'Idris Nugroho', 'Layla Permata',
+        ];
+
+        $users = collect();
+
+        // Create users dengan nama Islami
+        foreach ($islamicNames as $index => $name) {
+            $user = User::factory()->create([
+                'name' => $name,
+                'email' => strtolower(str_replace(' ', '.', $name)) . '@example.com',
+                'avatar' => $this->generateAvatar(),
+            ]);
+            $users->push($user);
+        }
 
         $startDate = now()->subDays(30);
         $wajibKeys = array_keys(\App\Services\IbadahService::WAJIB);
         $sunnahKeys = array_keys(\App\Services\IbadahService::SUNNAH);
-        
-        // Items required for 'perfect' calculation
         $requiredForPerfect = \App\Services\IbadahService::REQUIRED_FOR_PERFECT;
 
         foreach ($users as $index => $user) {
-            // Determine "Type" of user based on index to ensure leaderboard variety
-            // Top tier (Rajin), Mid tier (Sedang), Low tier (Jarang)
+            // Determine diligence level untuk variasi leaderboard
             $diligenceLevel = match (true) {
-                $index < 3 => 95, // Top 3 users: 95% perfect days
-                $index < 10 => 70, // Next 7 users: 70% perfect days
-                default => 30, // Rest: 30% perfect days
+                $index < 3 => 95,   // Top 3: sangat rajin (95% perfect days)
+                $index < 8 => 80,   // Next 5: rajin (80%)
+                $index < 15 => 60,  // Next 7: sedang (60%)
+                default => 35,      // Sisanya: jarang (35%)
             };
 
-            // Loop through last 30 days
+            // Loop 30 hari terakhir
             for ($day = 0; $day < 30; $day++) {
                 $date = $startDate->copy()->addDays($day)->toDateString();
                 
-                // Chance to be perfect day based on diligence
                 $isPerfect = rand(0, 100) < $diligenceLevel;
-
                 $tasksCompleted = [];
                 
-                // Set Wajib & Sunnah
-                // If perfect, all REQUIRED are true. Others random high chance.
-                // If not perfect, some REQUIRED are false.
-                
                 if ($isPerfect) {
+                    // Perfect day: semua required = true
                     foreach ($requiredForPerfect as $key) {
                         $tasksCompleted[$key] = true;
                     }
-                    // Randomize others (sunnahs not in required)
+                    // Sunnah lainnya: high chance
                     foreach ($sunnahKeys as $key) {
                         if (!in_array($key, $requiredForPerfect)) {
-                             $tasksCompleted[$key] = rand(0, 100) < 80; // High chance for extra sunnah if diligent
+                            $tasksCompleted[$key] = rand(0, 100) < 75;
                         }
                     }
                 } else {
-                    // Randomize all
+                    // Not perfect: randomize semua
                     foreach (array_merge($wajibKeys, $sunnahKeys) as $key) {
-                        $tasksCompleted[$key] = rand(0, 100) < 50; 
+                        $tasksCompleted[$key] = rand(0, 100) < 45;
                     }
-                    // Ensure at least one required is missing if logic says strictly not perfect?
-                    // But isPerfect_day in DB relies on the boolean passed, usually app recalculates.
-                    // For safety, let's trust the flag passed to DB.
                 }
 
                 $user->dailyLogs()->create([
                     'date' => $date,
                     'tasks_completed' => $tasksCompleted,
-                    'is_perfect_day' => $isPerfect, 
+                    'is_perfect_day' => $isPerfect,
                 ]);
             }
         }
+
+        $this->command->info('✅ Seeded ' . count($islamicNames) . ' users dengan avatar dan 30 hari log ibadah!');
     }
 }

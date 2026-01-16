@@ -4,6 +4,7 @@ export interface User {
     email: string;
     email_verified_at?: string;
     is_admin?: boolean;
+    avatar?: string | null;
 }
 
 export type IbadahType = 'shalat_5_waktu' | 'tilawah_quran' | 'puasa' | 'sedekah';
@@ -25,6 +26,7 @@ export interface DailyLog {
 export interface LeaderboardUser {
     id: number;
     name: string;
+    avatar?: string | null;
     perfect_days_count: number;
     total_sunnah: number;
 }

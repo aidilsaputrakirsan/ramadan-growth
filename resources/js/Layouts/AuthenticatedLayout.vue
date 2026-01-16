@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import RamadanLogo from '@/Components/RamadanLogo.vue';
 import ParticleBackground from '@/Components/ParticleBackground.vue';
+import UserAvatar from '@/Components/UserAvatar.vue';
 import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
@@ -155,9 +156,7 @@ const showLogoutConfirm = ref(false);
                             :href="route('profile.edit')"
                             class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all"
                         >
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white text-sm font-bold">
-                                {{ $page.props.auth.user.name?.charAt(0)?.toUpperCase() }}
-                            </div>
+                            <UserAvatar :user="$page.props.auth.user" size="sm" />
                             <span class="hidden lg:inline">{{ $page.props.auth.user.name }}</span>
                         </Link>
                         <button 
