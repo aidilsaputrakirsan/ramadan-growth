@@ -61,84 +61,156 @@ const deleteUser = (user: AdminUser) => {
 </script>
 
 <template>
-    <Head title="Admin - Kelola User" />
+    <Head title="Admin - Users" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <div class="flex items-center justify-between">
-                <h2 class="text-xl font-bold leading-tight text-gray-800 flex items-center gap-2">
-                    <span>⚙️</span> Kelola User
-                </h2>
-                <span class="text-xs bg-red-100 text-red-700 px-3 py-1 rounded-full font-bold uppercase">
-                    Admin Panel
-                </span>
+        <div class="px-4 py-6 space-y-4">
+            
+            <!-- Header -->
+            <div class="glass-card p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <lord-icon
+                            src="https://cdn.lordicon.com/lecprnjb.json"
+                            trigger="loop"
+                            delay="2000"
+                            colors="primary:#fbbf24,secondary:#f59e0b"
+                            style="width:40px;height:40px">
+                        </lord-icon>
+                        <div>
+                            <h1 class="text-lg font-bold text-white">Kelola User</h1>
+                            <p class="text-xs text-gray-400">Total: {{ users.length }} user</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full font-bold uppercase">
+                        Admin
+                    </span>
+                </div>
             </div>
-        </template>
 
-        <div class="py-6 sm:py-12">
-            <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-                
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">#</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Nama</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Email</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Perfect Days</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Joined</th>
-                                    <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-100">
-                                <tr v-for="(user, index) in users" :key="user.id" class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ index + 1 }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="font-medium text-gray-800">{{ user.name }}</div>
-                                        <span v-if="user.is_admin" class="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold">ADMIN</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ user.email }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="text-emerald-600 font-bold">{{ user.perfect_days_count }}</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ user.created_at }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                        <button @click="openEditModal(user)" class="text-blue-600 hover:text-blue-800 font-medium">Edit</button>
-                                        <button @click="resetPassword(user)" class="text-orange-600 hover:text-orange-800 font-medium">Reset PW</button>
-                                        <button v-if="!user.is_admin" @click="deleteUser(user)" class="text-red-600 hover:text-red-800 font-medium">Hapus</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+            <!-- User List -->
+            <div class="space-y-2">
+                <div
+                    v-for="(user, index) in users"
+                    :key="user.id"
+                    class="glass-card p-4"
+                >
+                    <div class="flex items-center gap-3">
+                        <!-- Avatar -->
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold flex-shrink-0">
+                            {{ user.name?.charAt(0)?.toUpperCase() }}
+                        </div>
+                        
+                        <!-- Info -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-white font-medium text-sm truncate">{{ user.name }}</span>
+                                <span v-if="user.is_admin" class="text-[9px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full font-bold">ADMIN</span>
+                            </div>
+                            <div class="text-gray-400 text-xs truncate">{{ user.email }}</div>
+                        </div>
+                        
+                        <!-- Stats -->
+                        <div class="text-right flex-shrink-0">
+                            <div class="text-emerald-400 font-bold text-sm">{{ user.perfect_days_count }}</div>
+                            <div class="text-gray-500 text-[10px]">hari</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="flex gap-2 mt-3 pt-3 border-t border-white/5">
+                        <button 
+                            @click="openEditModal(user)" 
+                            class="flex-1 py-2 text-xs font-medium text-blue-400 bg-blue-500/10 rounded-lg hover:bg-blue-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-1"
+                        >
+                            <lord-icon
+                                src="https://cdn.lordicon.com/wloilxuq.json"
+                                trigger="hover"
+                                colors="primary:#60a5fa"
+                                style="width:16px;height:16px">
+                            </lord-icon>
+                            Edit
+                        </button>
+                        <button 
+                            @click="resetPassword(user)" 
+                            class="flex-1 py-2 text-xs font-medium text-amber-400 bg-amber-500/10 rounded-lg hover:bg-amber-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-1"
+                        >
+                            <lord-icon
+                                src="https://cdn.lordicon.com/pdsourfn.json"
+                                trigger="hover"
+                                colors="primary:#fbbf24"
+                                style="width:16px;height:16px">
+                            </lord-icon>
+                            Reset
+                        </button>
+                        <button 
+                            v-if="!user.is_admin"
+                            @click="deleteUser(user)" 
+                            class="flex-1 py-2 text-xs font-medium text-red-400 bg-red-500/10 rounded-lg hover:bg-red-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-1"
+                        >
+                            <lord-icon
+                                src="https://cdn.lordicon.com/drxwpfop.json"
+                                trigger="hover"
+                                colors="primary:#f87171"
+                                style="width:16px;height:16px">
+                            </lord-icon>
+                            Hapus
+                        </button>
                     </div>
                 </div>
-                
-                <div class="mt-4 text-center text-xs text-gray-400">
-                    Total: {{ users.length }} user
-                </div>
-
             </div>
+
+            <!-- Empty State -->
+            <div v-if="users.length === 0" class="glass-card p-8 text-center">
+                <lord-icon
+                    src="https://cdn.lordicon.com/msoeawqm.json"
+                    trigger="loop"
+                    delay="1000"
+                    colors="primary:#9ca3af"
+                    style="width:64px;height:64px"
+                    class="mx-auto mb-3">
+                </lord-icon>
+                <p class="text-gray-400">Belum ada user.</p>
+            </div>
+
         </div>
 
         <!-- Edit Modal -->
         <Modal :show="showEditModal" @close="closeEditModal">
-            <div class="p-6">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">Edit User</h3>
+            <div class="bg-slate-900 p-6 rounded-2xl border border-white/10">
+                <h3 class="text-lg font-bold text-white mb-4">Edit User</h3>
                 <form @submit.prevent="submitEdit" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
-                        <input v-model="editForm.name" type="text" class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-emerald-500 focus:border-emerald-500" />
-                        <div v-if="editForm.errors.name" class="text-red-500 text-xs mt-1">{{ editForm.errors.name }}</div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Nama</label>
+                        <input 
+                            v-model="editForm.name" 
+                            type="text" 
+                            class="dark-input" 
+                        />
+                        <div v-if="editForm.errors.name" class="text-red-400 text-xs mt-1">{{ editForm.errors.name }}</div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input v-model="editForm.email" type="email" class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-emerald-500 focus:border-emerald-500" />
-                        <div v-if="editForm.errors.email" class="text-red-500 text-xs mt-1">{{ editForm.errors.email }}</div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                        <input 
+                            v-model="editForm.email" 
+                            type="email" 
+                            class="dark-input" 
+                        />
+                        <div v-if="editForm.errors.email" class="text-red-400 text-xs mt-1">{{ editForm.errors.email }}</div>
                     </div>
-                    <div class="flex justify-end gap-3 pt-4">
-                        <button type="button" @click="closeEditModal" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium text-sm">Batal</button>
-                        <button type="submit" :disabled="editForm.processing" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium text-sm disabled:opacity-50">
+                    <div class="flex gap-3 pt-2">
+                        <button 
+                            type="button" 
+                            @click="closeEditModal" 
+                            class="flex-1 py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 font-medium text-sm transition-all active:scale-[0.98]"
+                        >
+                            Batal
+                        </button>
+                        <button 
+                            type="submit" 
+                            :disabled="editForm.processing" 
+                            class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium text-sm transition-all active:scale-[0.98] disabled:opacity-50"
+                        >
                             Simpan
                         </button>
                     </div>
@@ -147,3 +219,13 @@ const deleteUser = (user: AdminUser) => {
         </Modal>
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.glass-card {
+    @apply bg-white/10 backdrop-blur-md rounded-2xl border border-white/10;
+}
+
+.dark-input {
+    @apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all;
+}
+</style>

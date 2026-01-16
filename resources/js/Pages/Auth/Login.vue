@@ -70,7 +70,7 @@ const submit = () => {
             <div class="mt-4 block">
                 <label class="flex items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600"
+                    <span class="ms-2 text-sm text-gray-300"
                         >Remember me</span
                     >
                 </label>
@@ -91,8 +91,8 @@ const submit = () => {
             </div>
 
             <div class="mt-6 text-center">
-                <span class="text-sm text-gray-500">Belum punya akun?</span>
-                <Link :href="route('register')" class="ml-1 text-sm font-medium text-emerald-600 hover:text-emerald-700">
+                <span class="text-sm text-gray-400">Belum punya akun?</span>
+                <Link :href="route('register')" class="ml-1 text-sm font-medium text-emerald-400 hover:text-emerald-300">
                     Daftar Sekarang
                 </Link>
             </div>

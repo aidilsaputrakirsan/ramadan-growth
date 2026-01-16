@@ -1,10 +1,6 @@
 <script setup lang="ts">
-import DangerButton from '@/Components/DangerButton.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import Modal from '@/Components/Modal.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
 
@@ -17,7 +13,6 @@ const form = useForm({
 
 const confirmUserDeletion = () => {
     confirmingUserDeletion.value = true;
-
     nextTick(() => passwordInput.value?.focus());
 };
 
@@ -26,81 +21,89 @@ const deleteUser = () => {
         preserveScroll: true,
         onSuccess: () => closeModal(),
         onError: () => passwordInput.value?.focus(),
-        onFinish: () => {
-            form.reset();
-        },
+        onFinish: () => form.reset(),
     });
 };
 
 const closeModal = () => {
     confirmingUserDeletion.value = false;
-
     form.clearErrors();
     form.reset();
 };
 </script>
 
 <template>
-    <section class="space-y-6">
-        <header>
-            <h2 class="text-lg font-bold text-red-600 flex items-center gap-2">
-                <span>⚠️</span> Hapus Akun
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-500">
-                Setelah akun Anda dihapus, semua sumber daya dan datanya akan dihapus secara permanen. Sebelum menghapus akun, harap unduh data atau informasi apa pun yang ingin Anda simpan.
-            </p>
+    <section>
+        <header class="flex items-center gap-3">
+            <lord-icon
+                src="https://cdn.lordicon.com/drxwpfop.json"
+                trigger="hover"
+                colors="primary:#f87171"
+                style="width:28px;height:28px">
+            </lord-icon>
+            <div>
+                <h2 class="text-base font-bold text-red-400">Hapus Akun</h2>
+                <p class="text-xs text-gray-400">Data akan hilang permanen.</p>
+            </div>
         </header>
 
-        <DangerButton @click="confirmUserDeletion" class="rounded-xl">Hapus Akun</DangerButton>
+        <button 
+            @click="confirmUserDeletion" 
+            class="mt-4 px-5 py-2.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 text-sm font-medium rounded-xl border border-red-500/30 transition-all active:scale-[0.98]"
+        >
+            Hapus Akun
+        </button>
 
         <Modal :show="confirmingUserDeletion" @close="closeModal">
-            <div class="p-6">
-                <h2
-                    class="text-lg font-bold text-gray-900"
-                >
-                    Apakah Anda yakin ingin menghapus akun?
-                </h2>
-
-                <p class="mt-1 text-sm text-gray-500">
-                    Tindakan ini tidak dapat dibatalkan. Masukkan password Anda untuk konfirmasi penghapusan permanen.
+            <div class="bg-slate-900 p-6 rounded-2xl border border-white/10">
+                <lord-icon
+                    src="https://cdn.lordicon.com/drxwpfop.json"
+                    trigger="loop"
+                    delay="1000"
+                    colors="primary:#f87171"
+                    style="width:56px;height:56px"
+                    class="mx-auto mb-3">
+                </lord-icon>
+                <h2 class="text-lg font-bold text-white text-center">Yakin hapus akun?</h2>
+                <p class="mt-2 text-sm text-gray-400 text-center">
+                    Tindakan ini tidak dapat dibatalkan. Masukkan password untuk konfirmasi.
                 </p>
 
-                <div class="mt-6">
-                    <InputLabel
-                        for="password"
-                        value="Password"
-                        class="sr-only"
-                    />
-
-                    <TextInput
+                <div class="mt-4">
+                    <input
                         id="password"
                         ref="passwordInput"
                         v-model="form.password"
                         type="password"
-                        class="mt-1 block w-full border-gray-200 focus:border-red-500 focus:ring-red-500 rounded-xl"
-                        placeholder="Masukkan password Anda"
+                        placeholder="Masukkan password"
+                        class="dark-input"
                         @keyup.enter="deleteUser"
                     />
-
-                    <InputError :message="form.errors.password" class="mt-2" />
+                    <InputError :message="form.errors.password" class="mt-1" />
                 </div>
 
-                <div class="mt-6 flex justify-end gap-3">
-                    <SecondaryButton @click="closeModal" class="rounded-xl">
-                        Batal
-                    </SecondaryButton>
-
-                    <DangerButton
-                        class="ms-3 rounded-xl shadow-lg shadow-red-100"
-                        :class="{ 'opacity-25': form.processing }"
-                        :disabled="form.processing"
-                        @click="deleteUser"
+                <div class="mt-6 flex gap-3">
+                    <button 
+                        @click="closeModal" 
+                        class="flex-1 py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 font-medium text-sm transition-all active:scale-[0.98]"
                     >
-                        Ya, Hapus Akun Ini
-                    </DangerButton>
+                        Batal
+                    </button>
+                    <button
+                        @click="deleteUser"
+                        :disabled="form.processing"
+                        class="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-medium text-sm transition-all active:scale-[0.98] disabled:opacity-50"
+                    >
+                        Ya, Hapus
+                    </button>
                 </div>
             </div>
         </Modal>
     </section>
 </template>
+
+<style scoped>
+.dark-input {
+    @apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 transition-all;
+}
+</style>

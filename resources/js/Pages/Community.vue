@@ -2,8 +2,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { PageProps, LeaderboardUser } from '@/types';
-import LeaderboardRow from '@/Components/LeaderboardRow.vue';
-import LeaderboardChart from '@/Components/LeaderboardChart.vue';
 import Modal from '@/Components/Modal.vue';
 import { ref } from 'vue';
 import axios from 'axios';
@@ -48,113 +46,261 @@ const openUserStats = async (user: LeaderboardUser) => {
 const closeUserModal = () => {
     showingUserModal.value = false;
 };
+
+// Icon mapping untuk stats
+const getStatIcon = (key: string): string => {
+    const iconMap: Record<string, string> = {
+        'tarawih': 'https://cdn.lordicon.com/lznlxwtc.json',
+        'tilawah_quran': 'https://cdn.lordicon.com/wxnxiano.json',
+        'sedekah': 'https://cdn.lordicon.com/uvqnvwbl.json',
+        'tahajud': 'https://cdn.lordicon.com/kkvxgpti.json',
+        'dhuha': 'https://cdn.lordicon.com/cllunfud.json',
+        'dzikir_pagi_petang': 'https://cdn.lordicon.com/rqsvgwdj.json',
+    };
+    return iconMap[key] || 'https://cdn.lordicon.com/egiwmiit.json';
+};
+
+const getRankStyle = (rank: number) => {
+    if (rank === 1) return 'from-yellow-500/30 to-amber-500/30 border-yellow-500/50';
+    if (rank === 2) return 'from-gray-400/30 to-slate-400/30 border-gray-400/50';
+    if (rank === 3) return 'from-orange-600/30 to-amber-600/30 border-orange-500/50';
+    return 'from-white/5 to-white/5 border-white/10';
+};
+
+const getRankBadge = (rank: number) => {
+    if (rank === 1) return '🥇';
+    if (rank === 2) return '🥈';
+    if (rank === 3) return '🥉';
+    return rank;
+};
 </script>
 
 <template>
-    <Head title="Community Leaderboard" />
+    <Head title="Leaderboard" />
 
     <AuthenticatedLayout>
-        <template #header>
-             <div class="flex items-center justify-between">
-                <h2 class="text-xl font-bold leading-tight text-gray-800 flex items-center gap-2">
-                    <span>🏆</span> Klasemen
-                </h2>
-                 
-            </div>
-        </template>
-
-        <div class="py-6 sm:py-12">
-            <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-                
-                <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-6 text-center mb-8 text-white shadow-lg relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')]"></div>
-
-                    <h3 class="text-xl font-bold mb-2 relative z-10">
-                        Fastabiqul Khairat 🚀
-                    </h3>
-                    <p class="text-emerald-50 text-sm relative z-10 italic">
-                        "Maka berlomba-lombalah kamu dalam berbuat kebaikan." (QS. Al-Baqarah: 148)
+        <div class="px-4 py-6 space-y-4">
+            
+            <!-- Header Banner -->
+            <div class="glass-card p-5 text-center relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-teal-500/20"></div>
+                <div class="relative z-10">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/oqdmuxru.json"
+                        trigger="loop"
+                        delay="1500"
+                        colors="primary:#fbbf24,secondary:#f59e0b"
+                        style="width:56px;height:56px"
+                        class="mx-auto mb-2">
+                    </lord-icon>
+                    <h1 class="text-xl font-bold text-white mb-1">Klasemen Ramadan</h1>
+                    <p class="text-emerald-300/80 text-xs italic">
+                        "Berlomba-lombalah dalam kebaikan" - QS. Al-Baqarah: 148
                     </p>
                 </div>
+            </div>
 
-                <!-- Top 5 Sunnah Chart -->
-                <div class="mb-8">
-                    <LeaderboardChart :users="top5Sunnah" />
+            <!-- Top 3 Podium -->
+            <div class="flex items-end justify-center gap-2 py-4" v-if="leaderboard.length >= 3">
+                <!-- 2nd Place -->
+                <div class="flex flex-col items-center">
+                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-gray-400 to-slate-500 flex items-center justify-center text-white font-bold text-lg shadow-lg mb-2">
+                        {{ leaderboard[1]?.name?.charAt(0)?.toUpperCase() }}
+                    </div>
+                    <div class="glass-card px-3 py-2 text-center min-w-[80px]">
+                        <div class="text-lg">🥈</div>
+                        <div class="text-white text-xs font-medium truncate max-w-[70px]">{{ leaderboard[1]?.name }}</div>
+                        <div class="text-emerald-400 text-xs font-bold">{{ leaderboard[1]?.perfect_days_count }} hari</div>
+                    </div>
                 </div>
-
-                <div class="space-y-1">
-                    <LeaderboardRow 
-                        v-for="(user, index) in leaderboard" 
-                        :key="user.id"
-                        :rank="index + 1"
-                        :user="user"
-                        :is-current-user="user.id === currentUserId"
-                        @click="openUserStats(user)"
-                        class="cursor-pointer hover:bg-gray-50 transition-colors"
-                    />
+                
+                <!-- 1st Place -->
+                <div class="flex flex-col items-center -mt-4">
+                    <div class="w-18 h-18 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-yellow-500/30 mb-2 ring-4 ring-yellow-400/30" style="width: 72px; height: 72px;">
+                        {{ leaderboard[0]?.name?.charAt(0)?.toUpperCase() }}
+                    </div>
+                    <div class="glass-card px-4 py-3 text-center min-w-[90px] border-yellow-500/30">
+                        <div class="text-2xl">🥇</div>
+                        <div class="text-white text-sm font-bold truncate max-w-[80px]">{{ leaderboard[0]?.name }}</div>
+                        <div class="text-emerald-400 text-sm font-bold">{{ leaderboard[0]?.perfect_days_count }} hari</div>
+                    </div>
                 </div>
-
-                <div v-if="leaderboard.length === 0" class="text-center py-12 text-gray-400 bg-white rounded-xl border border-dashed border-gray-300">
-                    <div class="text-4xl mb-2">🕋</div>
-                    <p>Belum ada data.</p>
-                    <p class="text-sm mt-1">Jadilah yang pertama memulai kebaikan!</p>
-                </div>
-
-                <div class="mt-8 text-center text-xs text-gray-400">
-                    Klik nama user untuk melihat detail statistik ibadah mereka.
+                
+                <!-- 3rd Place -->
+                <div class="flex flex-col items-center">
+                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white font-bold text-lg shadow-lg mb-2">
+                        {{ leaderboard[2]?.name?.charAt(0)?.toUpperCase() }}
+                    </div>
+                    <div class="glass-card px-3 py-2 text-center min-w-[80px]">
+                        <div class="text-lg">🥉</div>
+                        <div class="text-white text-xs font-medium truncate max-w-[70px]">{{ leaderboard[2]?.name }}</div>
+                        <div class="text-emerald-400 text-xs font-bold">{{ leaderboard[2]?.perfect_days_count }} hari</div>
+                    </div>
                 </div>
             </div>
+
+            <!-- Full Leaderboard -->
+            <div class="space-y-2">
+                <button
+                    v-for="(user, index) in leaderboard"
+                    :key="user.id"
+                    @click="openUserStats(user)"
+                    class="w-full glass-card p-3 flex items-center gap-3 transition-all active:scale-[0.98] hover:bg-white/15"
+                    :class="{ 
+                        'ring-2 ring-emerald-500/50 bg-emerald-500/10': user.id === currentUserId,
+                        [`bg-gradient-to-r ${getRankStyle(index + 1)}`]: index < 3
+                    }"
+                >
+                    <!-- Rank -->
+                    <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center font-bold text-sm"
+                         :class="index < 3 ? 'text-xl' : 'text-gray-400'">
+                        {{ getRankBadge(index + 1) }}
+                    </div>
+                    
+                    <!-- Avatar -->
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold">
+                        {{ user.name?.charAt(0)?.toUpperCase() }}
+                    </div>
+                    
+                    <!-- Info -->
+                    <div class="flex-1 text-left">
+                        <div class="text-white font-medium text-sm flex items-center gap-2">
+                            {{ user.name }}
+                            <span v-if="user.id === currentUserId" class="text-[10px] bg-emerald-500/30 text-emerald-300 px-2 py-0.5 rounded-full">Kamu</span>
+                        </div>
+                        <div class="text-gray-400 text-xs">{{ user.perfect_days_count }} hari sempurna</div>
+                    </div>
+                    
+                    <!-- Arrow -->
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Empty State -->
+            <div v-if="leaderboard.length === 0" class="glass-card p-8 text-center">
+                <lord-icon
+                    src="https://cdn.lordicon.com/msoeawqm.json"
+                    trigger="loop"
+                    delay="1000"
+                    colors="primary:#9ca3af"
+                    style="width:64px;height:64px"
+                    class="mx-auto mb-3">
+                </lord-icon>
+                <p class="text-gray-400">Belum ada data.</p>
+                <p class="text-gray-500 text-sm mt-1">Jadilah yang pertama!</p>
+            </div>
+
         </div>
 
         <!-- Detail Modal -->
         <Modal :show="showingUserModal" @close="closeUserModal">
-            <div class="p-6 bg-white overflow-hidden shadow-xl transform transition-all sm:rounded-lg">
-                <div v-if="isLoadingStats" class="flex justify-center items-center py-12">
-                    <svg class="animate-spin h-8 w-8 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
+            <div class="bg-slate-900 p-6 rounded-2xl border border-white/10">
+                <!-- Loading State -->
+                <div v-if="isLoadingStats" class="flex flex-col items-center justify-center py-12">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/xjovhxra.json"
+                        trigger="loop"
+                        colors="primary:#34d399,secondary:#10b981"
+                        style="width:64px;height:64px">
+                    </lord-icon>
+                    <p class="text-gray-400 text-sm mt-3">Memuat data...</p>
                 </div>
                 
+                <!-- Content -->
                 <div v-else-if="selectedUserStats">
+                    <!-- User Header -->
                     <div class="text-center mb-6">
-                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
-                            <span class="text-2xl text-white font-bold">{{ selectedUserStats.user.name?.charAt(0)?.toUpperCase() }}</span>
+                        <div class="relative inline-block">
+                            <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/30">
+                                <span class="text-3xl text-white font-bold">{{ selectedUserStats.user.name?.charAt(0)?.toUpperCase() }}</span>
+                            </div>
+                            <div class="absolute -bottom-1 -right-1">
+                                <lord-icon
+                                    src="https://cdn.lordicon.com/egiwmiit.json"
+                                    trigger="loop"
+                                    delay="2000"
+                                    colors="primary:#fbbf24"
+                                    style="width:28px;height:28px">
+                                </lord-icon>
+                            </div>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-800">
-                            {{ selectedUserStats.user.name }}
-                        </h2>
-                        <div class="text-emerald-600 font-medium">
-                            {{ selectedUserStats.user.perfect_days }} Hari Sempurna
+                        <h2 class="text-xl font-bold text-white mt-3">{{ selectedUserStats.user.name }}</h2>
+                        <div class="flex items-center justify-center gap-2 mt-1">
+                            <lord-icon
+                                src="https://cdn.lordicon.com/surjmvno.json"
+                                trigger="loop"
+                                delay="3000"
+                                colors="primary:#fbbf24"
+                                style="width:20px;height:20px">
+                            </lord-icon>
+                            <span class="text-emerald-400 font-bold">{{ selectedUserStats.user.perfect_days }} Hari Sempurna</span>
                         </div>
                     </div>
 
-                    <h3 class="text-sm uppercase font-bold text-gray-400 tracking-wider mb-4 border-b pb-2">
-                        Statistik Ibadah Sunnah
-                    </h3>
-                    
-                    <div class="space-y-3">
-                        <div v-for="stat in selectedUserStats.stats" :key="stat.key" class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                             <div class="flex items-center gap-3">
-                                 <div class="text-2xl">{{ stat.icon }}</div>
-                                 <div class="font-medium text-gray-700">{{ stat.label }}</div>
-                             </div>
-                             <div class="font-bold text-emerald-600 bg-emerald-100 px-3 py-1 rounded-full text-sm">
-                                 {{ stat.count }}x
-                             </div>
-                        </div>
-                        <div v-if="selectedUserStats.stats.length === 0" class="text-center text-gray-400 py-4 italic">
-                            Belum ada data detail.
+                    <!-- Stats Section -->
+                    <div class="bg-white/5 rounded-xl p-4 mb-4">
+                        <h3 class="text-xs uppercase font-bold text-gray-500 tracking-wider mb-3 flex items-center gap-2">
+                            <lord-icon
+                                src="https://cdn.lordicon.com/gqdnbnwt.json"
+                                trigger="hover"
+                                colors="primary:#9ca3af"
+                                style="width:16px;height:16px">
+                            </lord-icon>
+                            Statistik Ibadah Sunnah
+                        </h3>
+                        
+                        <div class="space-y-2">
+                            <div v-for="(stat, index) in selectedUserStats.stats" :key="stat.key" 
+                                 class="flex items-center justify-between p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-all">
+                                <div class="flex items-center gap-3">
+                                    <lord-icon
+                                        :src="getStatIcon(stat.key)"
+                                        trigger="hover"
+                                        colors="primary:#34d399,secondary:#10b981"
+                                        style="width:28px;height:28px">
+                                    </lord-icon>
+                                    <div class="font-medium text-gray-300 text-sm">{{ stat.label }}</div>
+                                </div>
+                                <div class="font-bold text-emerald-400 bg-emerald-500/20 px-3 py-1 rounded-full text-xs">
+                                    {{ stat.count }}x
+                                </div>
+                            </div>
+                            
+                            <!-- Empty State -->
+                            <div v-if="selectedUserStats.stats.length === 0" class="text-center py-6">
+                                <lord-icon
+                                    src="https://cdn.lordicon.com/msoeawqm.json"
+                                    trigger="loop"
+                                    delay="1000"
+                                    colors="primary:#6b7280"
+                                    style="width:48px;height:48px"
+                                    class="mx-auto mb-2">
+                                </lord-icon>
+                                <p class="text-gray-500 text-sm">Belum ada data ibadah sunnah.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="mt-6 flex justify-end">
-                    <button @click="closeUserModal" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium text-sm">
-                        Tutup
-                    </button>
-                </div>
+                <!-- Close Button -->
+                <button @click="closeUserModal" class="w-full py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 font-medium text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/rivoakkk.json"
+                        trigger="hover"
+                        colors="primary:#ffffff"
+                        style="width:18px;height:18px">
+                    </lord-icon>
+                    Tutup
+                </button>
             </div>
         </Modal>
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.glass-card {
+    @apply bg-white/10 backdrop-blur-md rounded-2xl border border-white/10;
+}
+</style>

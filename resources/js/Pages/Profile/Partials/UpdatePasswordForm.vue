@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -18,9 +15,7 @@ const form = useForm({
 const updatePassword = () => {
     form.put(route('password.update'), {
         preserveScroll: true,
-        onSuccess: () => {
-            form.reset();
-        },
+        onSuccess: () => form.reset(),
         onError: () => {
             if (form.errors.password) {
                 form.reset('password', 'password_confirmation');
@@ -37,92 +32,81 @@ const updatePassword = () => {
 
 <template>
     <section>
-        <header>
-            <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <span>🔒</span> Perbarui Password
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-500">
-                Pastikan akun Anda menggunakan password yang panjang dan acak untuk tetap aman.
-            </p>
+        <header class="flex items-center gap-3">
+            <lord-icon
+                src="https://cdn.lordicon.com/pdsourfn.json"
+                trigger="hover"
+                colors="primary:#34d399"
+                style="width:28px;height:28px">
+            </lord-icon>
+            <div>
+                <h2 class="text-base font-bold text-white">Perbarui Password</h2>
+                <p class="text-xs text-gray-400">Gunakan password yang kuat.</p>
+            </div>
         </header>
 
-        <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
+        <form @submit.prevent="updatePassword" class="mt-5 space-y-4">
             <div>
-                <InputLabel for="current_password" value="Password Saat Ini" />
-
-                <TextInput
+                <label for="current_password" class="block text-sm font-medium text-gray-300 mb-1">Password Saat Ini</label>
+                <input
                     id="current_password"
                     ref="currentPasswordInput"
                     v-model="form.current_password"
                     type="password"
-                    class="mt-1 block w-full border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-xl shadow-sm"
                     autocomplete="current-password"
+                    class="dark-input"
                 />
-
-                <InputError
-                    :message="form.errors.current_password"
-                    class="mt-2"
-                />
+                <InputError :message="form.errors.current_password" class="mt-1" />
             </div>
 
             <div>
-                <InputLabel for="password" value="Password Baru" />
-
-                <TextInput
+                <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password Baru</label>
+                <input
                     id="password"
                     ref="passwordInput"
                     v-model="form.password"
                     type="password"
-                    class="mt-1 block w-full border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-xl shadow-sm"
                     autocomplete="new-password"
+                    class="dark-input"
                 />
-
-                <InputError :message="form.errors.password" class="mt-2" />
+                <InputError :message="form.errors.password" class="mt-1" />
             </div>
 
             <div>
-                <InputLabel
-                    for="password_confirmation"
-                    value="Konfirmasi Password Baru"
-                />
-
-                <TextInput
+                <label for="password_confirmation" class="block text-sm font-medium text-gray-300 mb-1">Konfirmasi Password</label>
+                <input
                     id="password_confirmation"
                     v-model="form.password_confirmation"
                     type="password"
-                    class="mt-1 block w-full border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-xl shadow-sm"
                     autocomplete="new-password"
+                    class="dark-input"
                 />
-
-                <InputError
-                    :message="form.errors.password_confirmation"
-                    class="mt-2"
-                />
+                <InputError :message="form.errors.password_confirmation" class="mt-1" />
             </div>
 
-            <div class="flex items-center gap-4">
-                <PrimaryButton 
+            <div class="flex items-center gap-3 pt-2">
+                <button 
+                    type="submit"
                     :disabled="form.processing"
-                    class="bg-emerald-600 hover:bg-emerald-700 rounded-xl px-6 py-2.5 shadow-lg shadow-emerald-100"
+                    class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-xl transition-all active:scale-[0.98] disabled:opacity-50"
                 >
                     Update Password
-                </PrimaryButton>
-
+                </button>
                 <Transition
-                    enter-active-class="transition ease-in-out"
+                    enter-active-class="transition ease-out duration-200"
                     enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
+                    leave-active-class="transition ease-in duration-150"
                     leave-to-class="opacity-0"
                 >
-                    <p
-                        v-if="form.recentlySuccessful"
-                        class="text-sm text-emerald-600 font-medium"
-                    >
-                        Tersimpan! ✅
-                    </p>
+                    <span v-if="form.recentlySuccessful" class="text-sm text-emerald-400">✓ Tersimpan</span>
                 </Transition>
             </div>
         </form>
     </section>
 </template>
+
+<style scoped>
+.dark-input {
+    @apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all;
+}
+</style>

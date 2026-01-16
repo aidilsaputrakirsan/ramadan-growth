@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 
 defineProps<{
@@ -20,94 +17,87 @@ const form = useForm({
 
 <template>
     <section>
-        <header>
-            <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <span>📝</span> Informasi Profil
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-500">
-                Ubah informasi profil dan alamat email akun Anda.
-            </p>
+        <header class="flex items-center gap-3">
+            <lord-icon
+                src="https://cdn.lordicon.com/wloilxuq.json"
+                trigger="hover"
+                colors="primary:#34d399"
+                style="width:28px;height:28px">
+            </lord-icon>
+            <div>
+                <h2 class="text-base font-bold text-white">Informasi Profil</h2>
+                <p class="text-xs text-gray-400">Ubah nama dan email akun Anda.</p>
+            </div>
         </header>
 
-        <form
-            @submit.prevent="form.patch(route('profile.update'))"
-            class="mt-6 space-y-6"
-        >
+        <form @submit.prevent="form.patch(route('profile.update'))" class="mt-5 space-y-4">
             <div>
-                <InputLabel for="name" value="Nama" />
-
-                <TextInput
+                <label for="name" class="block text-sm font-medium text-gray-300 mb-1">Nama</label>
+                <input
                     id="name"
                     type="text"
-                    class="mt-1 block w-full border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-xl shadow-sm"
                     v-model="form.name"
                     required
                     autofocus
                     autocomplete="name"
+                    class="dark-input"
                 />
-
-                <InputError class="mt-2" :message="form.errors.name" />
+                <InputError class="mt-1" :message="form.errors.name" />
             </div>
 
             <div>
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
+                <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                <input
                     id="email"
                     type="email"
-                    class="mt-1 block w-full border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-xl shadow-sm"
                     v-model="form.email"
                     required
                     autocomplete="username"
+                    class="dark-input"
                 />
-
-                <InputError class="mt-2" :message="form.errors.email" />
+                <InputError class="mt-1" :message="form.errors.email" />
             </div>
 
-            <div v-if="mustVerifyEmail && user.email_verified_at === null">
-                <p class="mt-2 text-sm text-gray-800">
-                    Alamat email Anda belum diverifikasi.
+            <div v-if="mustVerifyEmail && user.email_verified_at === null" class="text-sm">
+                <p class="text-gray-400">
+                    Email belum diverifikasi.
                     <Link
                         :href="route('verification.send')"
                         method="post"
                         as="button"
-                        class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                        class="text-emerald-400 underline hover:text-emerald-300"
                     >
-                        Klik di sini untuk mengirim ulang email verifikasi.
+                        Kirim ulang verifikasi
                     </Link>
                 </p>
-
-                <div
-                    v-show="status === 'verification-link-sent'"
-                    class="mt-2 text-sm font-medium text-emerald-600"
-                >
-                    Link verifikasi baru telah dikirim ke alamat email Anda.
+                <div v-show="status === 'verification-link-sent'" class="mt-2 text-sm font-medium text-emerald-400">
+                    Link verifikasi baru telah dikirim.
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
-                <PrimaryButton 
+            <div class="flex items-center gap-3 pt-2">
+                <button 
+                    type="submit"
                     :disabled="form.processing"
-                    class="bg-emerald-600 hover:bg-emerald-700 rounded-xl px-6 py-2.5 shadow-lg shadow-emerald-100"
+                    class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-xl transition-all active:scale-[0.98] disabled:opacity-50"
                 >
-                    Simpan Perubahan
-                </PrimaryButton>
-
+                    Simpan
+                </button>
                 <Transition
-                    enter-active-class="transition ease-in-out"
+                    enter-active-class="transition ease-out duration-200"
                     enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
+                    leave-active-class="transition ease-in duration-150"
                     leave-to-class="opacity-0"
                 >
-                    <p
-                        v-if="form.recentlySuccessful"
-                        class="text-sm text-emerald-600 font-medium"
-                    >
-                        Tersimpan! ✅
-                    </p>
+                    <span v-if="form.recentlySuccessful" class="text-sm text-emerald-400">✓ Tersimpan</span>
                 </Transition>
             </div>
         </form>
     </section>
 </template>
+
+<style scoped>
+.dark-input {
+    @apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all;
+}
+</style>
