@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm, usePage, router } from '@inertiajs/vue3';
 import { PageProps } from '@/types';
-import { watch, computed } from 'vue';
+import { watch, computed, ref } from 'vue';
 
 const page = usePage<PageProps>();
 
@@ -22,6 +22,9 @@ const ibadahGroups = {
     ]
 };
 
+// Current selected date - sync with backend
+const selectedDate = ref((page.props.selectedDate as string) || new Date().toISOString().split('T')[0]);
+
 // Initialize form
 const allKeys = [...ibadahGroups.wajib, ...ibadahGroups.sunnah].map(i => i.key);
 const initialTasks: Record<string, boolean> = {};
@@ -31,8 +34,46 @@ allKeys.forEach(key => {
 });
 
 const form = useForm({
-    date: new Date().toISOString().split('T')[0],
+    date: selectedDate.value,
     tasks_completed: initialTasks
+});
+
+// Date navigation functions
+const changeDate = (days: number) => {
+    const current = new Date(selectedDate.value);
+    current.setDate(current.getDate() + days);
+    const newDate = current.toISOString().split('T')[0];
+    
+    // Prevent future dates
+    const today = new Date().toISOString().split('T')[0];
+    if (newDate > today) return;
+    
+    selectedDate.value = newDate;
+    router.get(route('dashboard'), { date: newDate }, {
+        preserveState: true,
+        preserveScroll: true,
+    });
+};
+
+const goToToday = () => {
+    selectedDate.value = new Date().toISOString().split('T')[0];
+    router.get(route('dashboard'), {}, {
+        preserveState: true,
+        preserveScroll: true,
+    });
+};
+
+// Update form when page data changes (after navigation)
+watch(() => page.props.todayLog, (newLog) => {
+    allKeys.forEach(key => {
+        // @ts-ignore
+        form.tasks_completed[key] = newLog?.tasks_completed?.[key] ?? false;
+    });
+}, { deep: true });
+
+// Update form date when selected date changes
+watch(selectedDate, (newDate) => {
+    form.date = newDate;
 });
 
 // Auto-save
@@ -55,6 +96,19 @@ const wajibCompleted = computed(() => wajibKeys.filter(key => form.tasks_complet
 const sunnahCompleted = computed(() => sunnahKeys.filter(key => form.tasks_completed[key]).length);
 const todayProgress = computed(() => Math.round((wajibCompleted.value / wajibKeys.length) * 100));
 
+const isToday = computed(() => {
+    return selectedDate.value === new Date().toISOString().split('T')[0];
+});
+
+const isFutureDate = computed(() => {
+    return selectedDate.value > new Date().toISOString().split('T')[0];
+});
+
+const formattedDate = computed(() => {
+    const date = new Date(selectedDate.value + 'T00:00:00');
+    return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+});
+
 const toggleTask = (key: string) => {
     form.tasks_completed[key] = !form.tasks_completed[key];
 };
@@ -66,6 +120,48 @@ const toggleTask = (key: string) => {
     <AuthenticatedLayout>
         <div class="px-4 py-6 space-y-4">
             
+            <!-- Date Navigation Card -->
+            <div class="glass-card p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <button 
+                        @click="changeDate(-1)"
+                        class="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition-all active:scale-95"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    
+                    <div class="text-center flex-1">
+                        <p class="text-emerald-400 text-xs font-medium mb-0.5">
+                            {{ isToday ? 'Hari Ini' : 'Riwayat' }}
+                        </p>
+                        <p class="text-white text-sm font-bold">{{ formattedDate }}</p>
+                    </div>
+                    
+                    <button 
+                        @click="changeDate(1)"
+                        :disabled="isFutureDate"
+                        class="p-2 rounded-lg transition-all active:scale-95"
+                        :class="isFutureDate 
+                            ? 'bg-white/5 text-gray-600 cursor-not-allowed' 
+                            : 'bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white'"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <button 
+                    v-if="!isToday"
+                    @click="goToToday"
+                    class="w-full py-2 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 rounded-lg text-emerald-400 text-xs font-medium transition-all active:scale-[0.98]"
+                >
+                    Kembali ke Hari Ini
+                </button>
+            </div>
+
             <!-- Greeting Card -->
             <div class="glass-card p-5 text-center">
                 <p class="text-emerald-400 text-sm font-medium mb-1">Assalamu'alaikum 👋</p>

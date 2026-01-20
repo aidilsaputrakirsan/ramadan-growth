@@ -40,21 +40,7 @@ const showLogoutConfirm = ref(false);
                         </lord-icon>
                         <span class="text-[10px] font-medium">Home</span>
                     </Link>
-                    <Link 
-                        :href="route('community')" 
-                        class="flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all"
-                        :class="route().current('community') 
-                            ? 'text-emerald-400 bg-emerald-500/20' 
-                            : 'text-gray-400'"
-                    >
-                        <lord-icon
-                            src="https://cdn.lordicon.com/oqdmuxru.json"
-                            trigger="hover"
-                            :colors="route().current('community') ? 'primary:#34d399' : 'primary:#9ca3af'"
-                            style="width:24px;height:24px">
-                        </lord-icon>
-                        <span class="text-[10px] font-medium">Ranking</span>
-                    </Link>
+
                     <Link 
                         v-if="$page.props.auth.user.is_admin"
                         :href="route('admin.users.index')" 
@@ -117,21 +103,7 @@ const showLogoutConfirm = ref(false);
                             </lord-icon>
                             Dashboard
                         </Link>
-                        <Link 
-                            :href="route('community')"
-                            class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all"
-                            :class="route().current('community') 
-                                ? 'text-emerald-400 bg-emerald-500/20' 
-                                : 'text-gray-300 hover:text-white hover:bg-white/5'"
-                        >
-                            <lord-icon
-                                src="https://cdn.lordicon.com/oqdmuxru.json"
-                                trigger="hover"
-                                colors="primary:#34d399"
-                                style="width:20px;height:20px">
-                            </lord-icon>
-                            Leaderboard
-                        </Link>
+
                         <Link 
                             v-if="$page.props.auth.user.is_admin"
                             :href="route('admin.users.index')"

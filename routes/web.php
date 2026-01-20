@@ -11,8 +11,6 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/community', [\App\Http\Controllers\CommunityController::class, 'index'])->name('community');
-    Route::get('/community/{user}', [\App\Http\Controllers\CommunityController::class, 'show'])->name('community.show');
     Route::post('/daily-log', [\App\Http\Controllers\DailyLogController::class, 'store'])->name('daily-log.store');
 });
 
@@ -31,4 +29,4 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     Route::delete('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

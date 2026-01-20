@@ -9,7 +9,8 @@ class DashboardController extends Controller
     public function __construct(
         protected \App\Services\PerfectDayCalculator $calculator,
         protected \App\Services\StreakService $streakService
-    ) {}
+    ) {
+    }
 
     /**
      * Display the dashboard.
@@ -17,11 +18,25 @@ class DashboardController extends Controller
     public function index(Request $request): \Inertia\Response
     {
         $user = $request->user();
-        $today = now()->format('Y-m-d');
 
-        // Get or create empty log for today (don't save yet, just for display)
+        // Get date from query parameter, default to today
+        $date = $request->query('date', now()->format('Y-m-d'));
+
+        // Validate date format and ensure it's not in the future
+        try {
+            $dateObj = new \DateTime($date);
+            $today = new \DateTime(now()->format('Y-m-d'));
+
+            if ($dateObj > $today) {
+                $date = $today->format('Y-m-d');
+            }
+        } catch (\Exception $e) {
+            $date = now()->format('Y-m-d');
+        }
+
+        // Get or create empty log for the selected date
         $todayLog = \App\Models\DailyLog::forUser($user->id)
-            ->where('date', $today)
+            ->where('date', $date)
             ->first();
 
         $totalPerfectDays = $this->calculator->getTotalPerfectDays($user->id);
@@ -33,6 +48,7 @@ class DashboardController extends Controller
             'totalPerfectDays' => $totalPerfectDays,
             'currentStreak' => $currentStreak,
             'masjidStage' => $masjidStage,
+            'selectedDate' => $date,
         ]);
     }
 }
