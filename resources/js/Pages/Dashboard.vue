@@ -94,12 +94,13 @@ watch(() => page.props.selectedDate, (newDate) => {
 const saveStatus = ref<'idle' | 'saving' | 'saved'>('idle');
 let savedTimeout: ReturnType<typeof setTimeout> | null = null;
 
-// Initialize form
-const allKeys = [...ibadahGroups.wajib, ...ibadahGroups.sunnah].map(i => i.key);
-const initialTasks: Record<string, boolean> = {};
+// Initialize form with proper typing
+type IbadahKey = string;
+const allKeys: IbadahKey[] = [...ibadahGroups.wajib, ...ibadahGroups.sunnah].map(i => i.key);
+const initialTasks: Record<IbadahKey, boolean> = {};
+const todayLogTasks = page.props.todayLog?.tasks_completed as Record<string, boolean> | undefined;
 allKeys.forEach(key => {
-    // @ts-ignore
-    initialTasks[key] = page.props.todayLog?.tasks_completed?.[key] ?? false;
+    initialTasks[key] = todayLogTasks?.[key] ?? false;
 });
 
 const form = useForm({
@@ -142,9 +143,9 @@ watch(() => page.props.todayLog, (newLog) => {
     // Only sync if not currently saving
     if (saveStatus.value === 'saving') return;
 
+    const newLogTasks = newLog?.tasks_completed as Record<string, boolean> | undefined;
     allKeys.forEach(key => {
-        // @ts-ignore
-        form.tasks_completed[key] = newLog?.tasks_completed?.[key] ?? false;
+        form.tasks_completed[key] = newLogTasks?.[key] ?? false;
     });
 }, { deep: true });
 
