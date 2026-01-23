@@ -22,7 +22,7 @@ let height = 0;
 // Jumlah particle disesuaikan untuk mobile (lebih sedikit = lebih ringan)
 const getParticleCount = () => {
     const isMobile = window.innerWidth < 768;
-    return isMobile ? 30 : 50;
+    return isMobile ? 15 : 50; // Reduced from 30 to 15 for mobile
 };
 
 const createParticle = (): Particle => ({
@@ -50,9 +50,12 @@ const drawStar = (x: number, y: number, size: number, opacity: number) => {
     ctx.save();
     ctx.globalAlpha = opacity;
     
-    // Glow effect
-    ctx.shadowBlur = size * 3;
-    ctx.shadowColor = 'rgba(251, 191, 36, 0.6)';
+    // Performance: Only add shadow/glow on desktop
+    // ShadowBlur is very expensive on mobile GPUs
+    if (width >= 768) {
+        ctx.shadowBlur = size * 3;
+        ctx.shadowColor = 'rgba(251, 191, 36, 0.6)';
+    }
     
     // Star shape
     ctx.fillStyle = '#fbbf24';
