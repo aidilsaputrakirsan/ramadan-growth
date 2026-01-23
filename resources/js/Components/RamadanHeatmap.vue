@@ -103,7 +103,7 @@ const weeks = computed(() => {
             >
                 <button
                     v-for="day in week"
-                    :key="day.ramadan_day"
+                    :key="day.gregorian_date"
                     @click="navigateToDate(day)"
                     :disabled="day.is_future"
                     :class="[

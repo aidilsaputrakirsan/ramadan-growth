@@ -8,7 +8,8 @@ import {
     LineElement,
     Filler,
     Tooltip,
-    Legend
+    Legend,
+    type ChartOptions
 } from 'chart.js'
 
 ChartJS.register(
@@ -82,7 +83,7 @@ const chartData = computed(() => ({
     ]
 }))
 
-const chartOptions = {
+const chartOptions: ChartOptions<'radar'> = {
     responsive: true,
     maintainAspectRatio: true,
     plugins: {
@@ -126,7 +127,7 @@ const chartOptions = {
                 color: 'rgba(209, 213, 219, 0.9)',
                 font: {
                     size: 11,
-                    weight: '500'
+                    weight: 500
                 }
             }
         }
