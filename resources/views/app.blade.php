@@ -5,7 +5,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title inertia>{{ config('app.name', 'Laravel') }}</title>
+    <title inertia>{{ config('app.name', 'Ramadan Tracker') }}</title>
+    <meta name="description" content="Aplikasi tracking ibadah Ramadan - Catat shalat, puasa, tarawih, tilawah Al-Quran, dan amal sunnah lainnya.">
+
+    <!-- Open Graph / WhatsApp / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ config('app.url') }}">
+    <meta property="og:title" content="{{ config('app.name', 'Ramadan Tracker') }} - Tracking Ibadah Ramadan">
+    <meta property="og:description" content="Catat dan pantau ibadah harian Ramadan. Shalat 5 waktu, puasa, tarawih, tilawah Al-Quran, sedekah, dan amal sunnah lainnya.">
+    <meta property="og:image" content="{{ config('app.url') }}/images/og-image.png">
+    <meta property="og:locale" content="id_ID">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ config('app.name', 'Ramadan Tracker') }} - Tracking Ibadah Ramadan">
+    <meta name="twitter:description" content="Catat dan pantau ibadah harian Ramadan. Shalat, puasa, tarawih, tilawah, dan amal sunnah lainnya.">
+    <meta name="twitter:image" content="{{ config('app.url') }}/images/og-image.png">
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
