@@ -9,7 +9,7 @@
 
 **Aplikasi Tracker Ibadah Ramadan Personal**
 
-Bangun kebiasaan ibadah yang konsisten selama bulan Ramadan dengan tracking visual yang menarik dan gamifikasi masjid virtual! 🕌
+Bangun kebiasaan ibadah yang konsisten selama bulan Ramadan dengan tracking harian dan streak counter.
 
 [Instalasi](#-instalasi) • [Panduan](#-panduan-penggunaan) • [Fitur](#-fitur-utama) • [Tech Stack](#-tech-stack)
 
@@ -17,101 +17,97 @@ Bangun kebiasaan ibadah yang konsisten selama bulan Ramadan dengan tracking visu
 
 ---
 
-## 📖 Tentang Aplikasi
+## Tentang Aplikasi
 
 **Ramadan Growth** adalah aplikasi web untuk membantu Anda membangun kebiasaan ibadah yang baik selama bulan Ramadan. Aplikasi ini **fokus pada personal growth** tanpa elemen kompetisi - murni untuk tracking progress pribadi Anda sendiri.
 
-### 🎯 Konsep Utama
+### Konsep Utama
 
 - **Perfect Day**: Hari sempurna tercapai ketika Anda menyelesaikan semua **ibadah wajib** (Shalat 5 waktu + Puasa)
-- **Masjid Evolution**: Visualisasi progress melalui 4 tahap pembangunan masjid virtual berdasarkan jumlah perfect days
 - **Streak Tracker**: Hitung berapa hari berturut-turut Anda mencapai perfect day
 - **Backfill Support**: Isi log ibadah untuk hari-hari yang terlewat
+- **Auto-save**: Setiap perubahan tersimpan otomatis
 
 ---
 
-## ✨ Fitur Utama
+## Fitur Utama
 
-### 1. 📅 Dashboard dengan Date Picker
-- **Navigasi Tanggal**: Lihat dan isi log ibadah untuk tanggal mana pun (tidak hanya hari ini)
+### 1. Dashboard dengan Date Navigation
+- **Navigasi Tanggal**: Lihat dan isi log ibadah untuk tanggal mana pun
 - **Tombol Navigasi**: Mundur/maju per hari dengan tombol previous/next
 - **Quick Jump**: Tombol "Kembali ke Hari Ini" untuk navigasi cepat
 - **Validasi**: Tidak bisa mengisi tanggal di masa depan
 
-### 2. ✅ Checklist Ibadah Harian
+### 2. Checklist Ibadah Harian
 
 **Ibadah Wajib** (Required untuk Perfect Day):
-- 🕌 Shalat 5 Waktu
-- 🥤 Puasa Ramadan
+- Shalat 5 Waktu
+- Puasa Ramadan
 
-**Ibadah Sunnah** (Opsional, untuk tambahan amalan):
-- 🌙 Shalat Tarawih
-- 📖 Tilawah Al-Qur'an
-- 🤲 Sedekah
-- 🌌 Shalat Tahajud
-- ☀️ Shalat Dhuha
-- 📿 Dzikir Pagi & Petang
+**Ibadah Sunnah** (Opsional):
+- Shalat Tarawih
+- Tilawah Al-Qur'an
+- Sedekah
+- Shalat Tahajud
+- Shalat Dhuha
+- Dzikir Pagi & Petang
 
-### 3. 📊 Statistik Personal
+### 3. Statistik Personal
+- **Profil Wajib (Ring Chart)**: Visualisasi modern untuk konsistensi Shalat & Puasa
+- **Profil Sunnah (Radar Chart)**: Analisis kekuatan ibadah sunnah Anda
 - **Perfect Days Counter**: Total hari sempurna yang Anda capai
 - **Streak Counter**: Berapa hari berturut-turut perfect day
-- **Progress Bar**: Visualisasi progress harian (wajib + sunnah)
 - **Auto-save**: Otomatis menyimpan setiap perubahan
 
-### 4. 🕌 Masjid Evolution
-Visualisasi progress melalui 4 tahap masjid:
-- **Stage 1** (0-6 perfect days): Tanah kosong / fondasi
-- **Stage 2** (7-14 perfect days): Struktur bangunan
-- **Stage 3** (15-21 perfect days): Kubah dan menara
-- **Stage 4** (22+ perfect days): Masjid lengkap
+### 4. Dashboard Features
+- **Greeting Card**: Sapaan personal dengan Avatar pengguna
+- **Date Navigation**: Kontrol penuh untuk melihat riwayat ibadah
+- **Gamification**: Level Masjid berkembang seiring jumlah Perfect Days
 
-### 5. 👤 Profile Management
+### 4. Profile Management
 - Edit nama dan email
 - Pilih avatar dari 10+ pilihan
 - Update password
 - Delete account
 
-### 6. 👨‍💼 Admin Panel (untuk Admin)
-- User management
+### 5. Admin Panel
+- Lihat daftar semua user dengan statistik perfect days
+- Edit user (nama/email)
 - Reset password user
 - Hapus user
 
-### 7. 🔐 Authentication
+### 6. Authentication
 - Register akun baru
 - Login
-- Forgot password
-- Email verification (optional)
+- Forgot password dengan email
+- Email verification
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Backend
 - **Laravel 12** - PHP Framework
 - **PHP 8.2+** - Language
-- **SQLite** - Database (default, bisa diganti MySQL/PostgreSQL)
-- **Inertia.js** - Server-side routing with SPA experience
+- **MySQL/SQLite** - Database
+- **Inertia.js** - Server-side routing dengan SPA experience
 
 ### Frontend
 - **Vue 3** - Progressive JavaScript Framework
 - **TypeScript** - Type-safe JavaScript
 - **Tailwind CSS v4** - Utility-first CSS
 - **Vite** - Build tool & dev server
-
-### UI/UX Libraries
-- **ApexCharts** - Grafik & visualisasi data
-- **Lottie** - Animasi
-- **Lord Icon** - Icon animasi
+- **Lord Icon** - Animated icons
 
 ---
 
-## 📦 Instalasi
+## Instalasi
 
 ### Prerequisites
 - PHP 8.2 atau lebih tinggi
 - Composer
 - Node.js 18+ dan NPM
-- SQLite3 (atau MySQL/PostgreSQL)
+- MySQL atau SQLite
 
 ### Setup Project
 
@@ -123,27 +119,26 @@ cd ramadan-growth
 
 2. **Install Dependencies**
 ```bash
-# Install PHP dependencies
 composer install
-
-# Install JavaScript dependencies
 npm install
 ```
 
 3. **Environment Configuration**
 ```bash
-# Copy file .env.example
-copy .env.example .env
-
-# Generate application key
+cp .env.example .env
 php artisan key:generate
 ```
 
 4. **Database Setup**
 
-Aplikasi menggunakan SQLite secara default. File database akan otomatis dibuat saat migrasi.
+Edit `.env` sesuai database Anda:
 
-Jika ingin menggunakan MySQL/PostgreSQL, edit `.env`:
+**SQLite:**
+```env
+DB_CONNECTION=sqlite
+```
+
+**MySQL:**
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -153,189 +148,126 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-5. **Run Migrations**
+5. **Run Migrations & Seeder**
 ```bash
-php artisan migrate
+php artisan migrate --seed
 ```
 
-6. **Build Assets**
+6. **Build Assets & Start Server**
 ```bash
-# Development
-npm run dev
+# Development (2 terminal)
+php artisan serve    # Terminal 1: Backend
+npm run dev          # Terminal 2: Frontend Vite
 
-# Production
-npm run build
-```
-
-7. **Start Application**
-```bash
-# Development mode (dengan hot reload)
+# Atau gunakan composer script
 composer dev
-
-# Atau manual:
-php artisan serve  # Backend di http://localhost:8000
-npm run dev        # Frontend Vite di http://localhost:5173
 ```
 
-8. **Access Application**
-Buka browser dan akses `http://localhost:8000`
+7. **Access Application**
+
+Buka browser: `http://localhost:8000`
+
+**Default Admin Account:**
+- Email: `admin@example.com`
+- Password: `password`
 
 ---
 
-## 🚀 Panduan Penggunaan
+## Panduan Penggunaan
 
-### 1. Register & Login
-- Klik **Register** untuk membuat akun baru
-- Isi nama, email, dan password
-- Login dengan credentials yang sudah dibuat
-
-### 2. Mengisi Checklist Ibadah
+### Mengisi Checklist Ibadah
 
 **Untuk Hari Ini:**
 - Masuk ke Dashboard
 - Klik pada item ibadah untuk menandai sebagai selesai
-- Checklist akan **auto-save** otomatis
+- Checklist akan auto-save otomatis
 
 **Untuk Hari Lain (Backfill):**
-- Gunakan tombol **◀️ / ▶️** untuk navigasi ke tanggal lain
+- Gunakan tombol navigasi untuk pindah ke tanggal lain
 - Klik item ibadah untuk mengisi log
-- Klik **"Kembali ke Hari Ini"** untuk kembali ke hari ini
+- Klik "Kembali ke Hari Ini" untuk kembali
 
-### 3. Memahami Perfect Day
-- Perfect Day = ✅ Shalat 5 Waktu + ✅ Puasa
+### Memahami Perfect Day
+- Perfect Day = Shalat 5 Waktu + Puasa (semua wajib tercentang)
 - Sunnah **tidak wajib** untuk perfect day
-- Sunnah hanya untuk menambah amalan
+- Streak bertambah setiap hari berturut-turut mencapai perfect day
 
-### 4. Melihat Progress
-- **Perfect Days**: Total hari dengan semua wajib tercentang
-- **Streak**: Berapa hari berturut-turut perfect day (tidak putus)
-- **Masjid Stage**: Lihat evolusi masjid Anda di sidebar/komponen
-
-### 5. Mengatur Profile
-- Klik menu **Profil**
-- Edit nama atau email
-- Pilih avatar favorit
+### Mengatur Profile
+- Klik avatar di navbar untuk akses menu profil
+- Edit nama, email, atau avatar
 - Update password jika perlu
 
-### 6. Admin (Khusus User Admin)
-- Klik menu **Admin**
-- Lihat daftar semua user
-- Reset password user lain
-- Hapus user jika diperlukan
+---
+
+## Struktur Project
+
+```
+app/
+├── Http/Controllers/
+│   ├── DashboardController.php
+│   ├── DailyLogController.php
+│   ├── ProfileController.php
+│   └── Admin/UserController.php
+├── Models/
+│   ├── User.php
+│   └── DailyLog.php
+└── Services/
+    ├── IbadahService.php
+    ├── PerfectDayCalculator.php
+    └── StreakService.php
+
+resources/js/
+├── Pages/
+│   ├── Dashboard.vue
+│   ├── Welcome.vue
+│   ├── Auth/
+│   ├── Profile/
+│   └── Admin/
+├── Components/
+└── Layouts/
+```
 
 ---
 
-## 🗂 Struktur Database
+## Customization
 
-### Users Table
-```
-- id
-- name
-- email
-- password
-- avatar (nullable)
-- is_admin (default: false)
-- email_verified_at
-- timestamps
-```
+### Mengubah Ibadah List
+Edit `app/Services/IbadahService.php` untuk menambah/mengurangi item ibadah.
 
-### Daily Logs Table
-```
-- id
-- user_id
-- date
-- tasks_completed (JSON: {shalat_5_waktu: bool, puasa: bool, ...})
-- is_perfect_day (boolean)
-- timestamps
-```
+### Mengubah Perfect Day Requirements
+Edit `IbadahService::WAJIB` untuk menentukan ibadah mana yang wajib untuk perfect day.
 
 ---
 
-## 🔧 Development
+## Troubleshooting
 
-### Composer Scripts
-
+### Vite manifest not found
 ```bash
-# Setup lengkap (install + migrate)
-composer setup
-
-# Run development server (backend + frontend + queue + logs)
-composer dev
-
-# Run tests
-composer test
-```
-
-### NPM Scripts
-
-```bash
-# Development dengan hot reload
 npm run dev
-
-# Build untuk production
+# atau untuk production:
 npm run build
 ```
 
----
-
-## 🎨 Customization
-
-### Mengubah Ibadah List
-Edit file `app/Services/IbadahService.php` untuk menambah/mengurangi item ibadah.
-
-### Mengubah Perfect Day Requirements
-Edit `IbadahService::REQUIRED_FOR_PERFECT` untuk menentukan ibadah mana yang wajib untuk perfect day.
-
-### Mengubah Masjid Stages
-Edit `app/Services/PerfectDayCalculator.php` method `getMasjidStage()` untuk mengubah threshold setiap tahap.
-
----
-
-## 🐛 Troubleshooting
-
-### Error: "No such file or directory (database.sqlite)"
+### Database error setelah seeding
 ```bash
-# Buat file database manual
-touch database/database.sqlite
-
-# Atau di Windows
-type nul > database\database.sqlite
-
-# Kemudian run migrations
-php artisan migrate
+php artisan migrate:fresh --seed
 ```
 
-### Error: "Permission denied" (Linux/Mac)
+### Permission denied (Linux/Mac)
 ```bash
 chmod -R 775 storage bootstrap/cache
 ```
 
-### Vite Error: "Failed to resolve import"
-```bash
-# Clear cache dan reinstall
-rm -rf node_modules
-npm install
-npm run dev
-```
-
 ---
 
-## 📝 License
+## License
 
 This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
 ---
 
-## 🤝 Contributing
-
-Kontribusi, issues, dan feature requests sangat diterima!
-
----
-
 <div align="center">
 
-**Made with ❤️ during Ramadan**
-
-بارك الله فيك
+**Made with love during Ramadan**
 
 </div>

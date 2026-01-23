@@ -1,10 +1,68 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import SunnahRadarChart from '@/Components/SunnahRadarChart.vue';
+import WajibStatsChart from '@/Components/WajibStatsChart.vue';
 import { Head, useForm, usePage, router } from '@inertiajs/vue3';
 import { PageProps } from '@/types';
 import { watch, computed, ref } from 'vue';
 
-const page = usePage<PageProps>();
+interface DateInfo {
+    gregorian: {
+        day: number
+        month: number
+        month_name: string
+        year: number
+        day_name: string
+        formatted: string
+    }
+    hijri: {
+        day: number
+        month: number
+        month_name: string
+        year: number
+        formatted: string
+    }
+    combined: string
+}
+
+interface HeatmapDay {
+    hijri_day: number
+    gregorian_date: string
+    gregorian_formatted: string
+    hijri_formatted: string
+    is_today: boolean
+    is_past: boolean
+    is_future: boolean
+    has_log: boolean
+    is_perfect: boolean
+    tasks_completed: Record<string, boolean>
+    completion_count: number
+}
+
+interface SunnahStats {
+    tarawih: number
+    tilawah_quran: number
+    sedekah: number
+    tahajud: number
+    dhuha: number
+    dzikir_pagi_petang: number
+}
+
+interface WajibStats {
+    shalat_5_waktu: number
+    puasa: number
+}
+
+const page = usePage<PageProps & {
+    dateInfo: DateInfo
+    heatmapData: HeatmapDay[]
+    hijriMonth: number
+    hijriMonthName: string
+    hijriYear: number
+    sunnahStats: SunnahStats
+    wajibStats: WajibStats
+    totalMonthDays: number
+}>();
 
 // Definitions
 const ibadahGroups = {
@@ -24,6 +82,10 @@ const ibadahGroups = {
 
 // Current selected date - sync with backend
 const selectedDate = ref((page.props.selectedDate as string) || new Date().toISOString().split('T')[0]);
+
+// Save status for better UI feedback
+const saveStatus = ref<'idle' | 'saving' | 'saved'>('idle');
+let savedTimeout: ReturnType<typeof setTimeout> | null = null;
 
 // Initialize form
 const allKeys = [...ibadahGroups.wajib, ...ibadahGroups.sunnah].map(i => i.key);
@@ -63,25 +125,51 @@ const goToToday = () => {
     });
 };
 
-// Update form when page data changes (after navigation)
+// Update form date when selected date changes
+watch(selectedDate, (newDate) => {
+    form.date = newDate;
+});
+
+// Sync form with server data after reload (but don't trigger save)
 watch(() => page.props.todayLog, (newLog) => {
+    // Only sync if not currently saving
+    if (saveStatus.value === 'saving') return;
+
     allKeys.forEach(key => {
         // @ts-ignore
         form.tasks_completed[key] = newLog?.tasks_completed?.[key] ?? false;
     });
 }, { deep: true });
 
-// Update form date when selected date changes
-watch(selectedDate, (newDate) => {
-    form.date = newDate;
-});
+// Auto-save with debounce to prevent rapid fire
+let saveTimeout: ReturnType<typeof setTimeout> | null = null;
+let isUserAction = false;
 
-// Auto-save
 const autoSave = () => {
-    form.post(route('daily-log.store'), {
-        preserveScroll: true,
-        preserveState: true,
-    });
+    // Only save if triggered by user action
+    if (!isUserAction) return;
+    isUserAction = false;
+
+    if (saveTimeout) clearTimeout(saveTimeout);
+    if (savedTimeout) clearTimeout(savedTimeout);
+
+    saveStatus.value = 'saving';
+
+    saveTimeout = setTimeout(() => {
+        form.post(route('daily-log.store'), {
+            preserveScroll: true,
+            preserveState: false, // Allow full refresh
+            onSuccess: () => {
+                saveStatus.value = 'saved';
+                savedTimeout = setTimeout(() => {
+                    saveStatus.value = 'idle';
+                }, 2000);
+            },
+            onError: () => {
+                saveStatus.value = 'idle';
+            },
+        });
+    }, 300);
 };
 
 watch(() => form.tasks_completed, () => {
@@ -105,11 +193,23 @@ const isFutureDate = computed(() => {
 });
 
 const formattedDate = computed(() => {
+    // Use dateInfo from backend if available
+    if (page.props.dateInfo) {
+        return page.props.dateInfo.gregorian.formatted;
+    }
     const date = new Date(selectedDate.value + 'T00:00:00');
     return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 });
 
+const hijriDate = computed(() => {
+    return page.props.dateInfo?.hijri?.formatted ?? '';
+});
+
+// Computed for heatmap to ensure reactivity
+const heatmapData = computed(() => page.props.heatmapData || []);
+
 const toggleTask = (key: string) => {
+    isUserAction = true;
     form.tasks_completed[key] = !form.tasks_completed[key];
 };
 </script>
@@ -137,6 +237,7 @@ const toggleTask = (key: string) => {
                             {{ isToday ? 'Hari Ini' : 'Riwayat' }}
                         </p>
                         <p class="text-white text-sm font-bold">{{ formattedDate }}</p>
+                        <p v-if="hijriDate" class="text-amber-400/80 text-xs mt-0.5">{{ hijriDate }}</p>
                     </div>
                     
                     <button 
@@ -163,12 +264,28 @@ const toggleTask = (key: string) => {
             </div>
 
             <!-- Greeting Card -->
-            <div class="glass-card p-5 text-center">
-                <p class="text-emerald-400 text-sm font-medium mb-1">Assalamu'alaikum 👋</p>
-                <h1 class="text-white text-xl font-bold">{{ $page.props.auth.user.name }}</h1>
-                <p class="text-gray-400 text-xs mt-1">
-                    {{ new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' }) }}
-                </p>
+            <div class="glass-card p-5 flex items-center gap-4">
+                <!-- Avatar -->
+                <div class="flex-shrink-0">
+                    <img 
+                        v-if="$page.props.auth.user.avatar" 
+                        :src="$page.props.auth.user.avatar.startsWith('http') ? $page.props.auth.user.avatar : '/storage/' + $page.props.auth.user.avatar" 
+                        alt="Avatar" 
+                        class="w-12 h-12 rounded-full border-2 border-emerald-500/50 object-cover bg-slate-800"
+                    >
+                    <div 
+                        v-else 
+                        class="w-12 h-12 rounded-full border-2 border-emerald-500/50 bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-lg"
+                    >
+                        {{ $page.props.auth.user.name.charAt(0) }}
+                    </div>
+                </div>
+                
+                <!-- Text -->
+                <div>
+                    <p class="text-emerald-400 text-sm font-medium mb-0.5">Assalamu'alaikum</p>
+                    <h1 class="text-white text-xl font-bold leading-tight">{{ $page.props.auth.user.name }}</h1>
+                </div>
             </div>
 
             <!-- Stats Row -->
@@ -202,6 +319,20 @@ const toggleTask = (key: string) => {
                 </div>
             </div>
 
+            <!-- Wajib Stats Chart -->
+            <WajibStatsChart
+                v-if="page.props.wajibStats && page.props.totalMonthDays > 0"
+                :stats="page.props.wajibStats"
+                :total-days="page.props.totalMonthDays"
+            />
+
+            <!-- Sunnah Radar Chart -->
+            <SunnahRadarChart
+                v-if="page.props.sunnahStats && page.props.totalMonthDays > 0"
+                :stats="page.props.sunnahStats"
+                :total-days="page.props.totalMonthDays"
+            />
+
             <!-- Today Progress -->
             <div class="glass-card p-5">
                 <div class="flex items-center justify-between mb-3">
@@ -229,23 +360,19 @@ const toggleTask = (key: string) => {
                     leave-active-class="transition ease-in duration-150"
                     leave-from-class="opacity-100"
                     leave-to-class="opacity-0"
+                    mode="out-in"
                 >
-                    <span v-if="form.processing" class="text-xs text-gray-400 flex items-center gap-2">
-                        <lord-icon
-                            src="https://cdn.lordicon.com/xjovhxra.json"
-                            trigger="loop"
-                            colors="primary:#34d399"
-                            style="width:16px;height:16px">
-                        </lord-icon>
+                    <span v-if="saveStatus === 'saving'" key="saving" class="text-xs text-gray-400 flex items-center gap-2">
+                        <svg class="animate-spin h-4 w-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
                         Menyimpan...
                     </span>
-                    <span v-else-if="form.recentlySuccessful" class="text-xs text-emerald-400 flex items-center gap-1">
-                        <lord-icon
-                            src="https://cdn.lordicon.com/oqdmuxru.json"
-                            trigger="in"
-                            colors="primary:#34d399"
-                            style="width:16px;height:16px">
-                        </lord-icon>
+                    <span v-else-if="saveStatus === 'saved'" key="saved" class="text-xs text-emerald-400 flex items-center gap-1">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
                         Tersimpan
                     </span>
                 </transition>

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Services\HijriDateService;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,7 +16,7 @@ class DatabaseSeeder extends Seeder
      */
     private array $avatarStyles = [
         'lorelei',
-        'lorelei-neutral', 
+        'lorelei-neutral',
         'notionists',
         'notionists-neutral',
         'micah',
@@ -41,6 +42,18 @@ class DatabaseSeeder extends Seeder
     ];
 
     /**
+     * Sunnah keys untuk spider chart
+     */
+    private array $sunnahKeys = [
+        'tarawih',
+        'tilawah_quran',
+        'sedekah',
+        'tahajud',
+        'dhuha',
+        'dzikir_pagi_petang',
+    ];
+
+    /**
      * Generate random avatar URL
      */
     private function generateAvatar(): string
@@ -51,88 +64,146 @@ class DatabaseSeeder extends Seeder
     }
 
     /**
+     * Generate sunnah strength profile untuk setiap user
+     * Setiap user punya kekuatan berbeda di ibadah sunnah tertentu
+     */
+    private function generateSunnahProfile(): array
+    {
+        $profiles = [
+            // Tipe: Qiyamul Lail (kuat tarawih & tahajud)
+            ['tarawih' => 90, 'tilawah_quran' => 60, 'sedekah' => 50, 'tahajud' => 85, 'dhuha' => 40, 'dzikir_pagi_petang' => 55],
+            // Tipe: Penghafal (kuat tilawah & dzikir)
+            ['tarawih' => 70, 'tilawah_quran' => 95, 'sedekah' => 45, 'tahajud' => 50, 'dhuha' => 55, 'dzikir_pagi_petang' => 90],
+            // Tipe: Dermawan (kuat sedekah)
+            ['tarawih' => 75, 'tilawah_quran' => 55, 'sedekah' => 95, 'tahajud' => 40, 'dhuha' => 60, 'dzikir_pagi_petang' => 65],
+            // Tipe: Morning Person (kuat dhuha & dzikir pagi)
+            ['tarawih' => 60, 'tilawah_quran' => 70, 'sedekah' => 55, 'tahajud' => 45, 'dhuha' => 95, 'dzikir_pagi_petang' => 90],
+            // Tipe: Night Owl (kuat tahajud & tarawih)
+            ['tarawih' => 95, 'tilawah_quran' => 50, 'sedekah' => 40, 'tahajud' => 90, 'dhuha' => 30, 'dzikir_pagi_petang' => 55],
+            // Tipe: Balanced (seimbang semua)
+            ['tarawih' => 70, 'tilawah_quran' => 70, 'sedekah' => 70, 'tahajud' => 70, 'dhuha' => 70, 'dzikir_pagi_petang' => 70],
+            // Tipe: Tilawah Focus
+            ['tarawih' => 65, 'tilawah_quran' => 98, 'sedekah' => 50, 'tahajud' => 55, 'dhuha' => 45, 'dzikir_pagi_petang' => 75],
+            // Tipe: Social (sedekah & dzikir)
+            ['tarawih' => 70, 'tilawah_quran' => 60, 'sedekah' => 92, 'tahajud' => 45, 'dhuha' => 55, 'dzikir_pagi_petang' => 88],
+        ];
+
+        return $profiles[array_rand($profiles)];
+    }
+
+    /**
      * Seed the application's database.
      */
     public function run(): void
     {
+        $hijriService = new HijriDateService();
+
+        // Get current Hijri month calendar
+        $monthCalendar = $hijriService->getCurrentMonthCalendar();
+        $monthDates = collect($monthCalendar['days']);
+
+        // Filter hanya tanggal yang sudah lewat atau hari ini
+        $availableDates = $monthDates->filter(function ($day) {
+            return !$day['is_future'];
+        });
+
+        // Jika tidak ada tanggal yang tersedia, gunakan semua hari sebagai simulasi
+        if ($availableDates->isEmpty()) {
+            $this->command->info('📅 Menggunakan data simulasi untuk bulan ' . $monthCalendar['hijri_month_name'] . '...');
+            $availableDates = $monthDates;
+        }
+
         // Create Admin Account
-        User::factory()->create([
-            'name' => 'Admin Ramadan',
+        $admin = User::factory()->create([
+            'name' => 'Admin',
             'email' => 'admin@example.com',
             'password' => bcrypt('password'),
             'is_admin' => true,
             'avatar' => 'https://api.dicebear.com/7.x/lorelei/svg?seed=admin&backgroundColor=transparent',
         ]);
 
-        // Nama-nama Islami untuk dummy users
-        $islamicNames = [
-            'Ahmad Fauzi', 'Fatimah Zahra', 'Muhammad Rizki', 'Aisyah Putri',
-            'Abdullah Rahman', 'Khadijah Sari', 'Umar Hakim', 'Maryam Dewi',
-            'Ali Akbar', 'Zainab Nur', 'Hasan Basri', 'Ruqayyah Indah',
-            'Ibrahim Malik', 'Hafsa Wulan', 'Yusuf Pratama', 'Aminah Lestari',
-            'Bilal Saputra', 'Safiya Rahma', 'Khalid Wijaya', 'Asma Cantika',
-            'Hamza Putra', 'Sumaya Fitri', 'Idris Nugroho', 'Layla Permata',
+        // 2 user biasa
+        $regularUsers = [
+            ['name' => 'Ahmad Fauzi', 'email' => 'ahmad@example.com'],
+            ['name' => 'Fatimah Zahra', 'email' => 'fatimah@example.com'],
         ];
 
-        $users = collect();
+        $users = collect([$admin]);
+        $wajibKeys = array_keys(\App\Services\IbadahService::WAJIB);
+        $requiredForPerfect = \App\Services\IbadahService::REQUIRED_FOR_PERFECT;
 
-        // Create users dengan nama Islami
-        foreach ($islamicNames as $index => $name) {
+        // Create regular users
+        foreach ($regularUsers as $userData) {
             $user = User::factory()->create([
-                'name' => $name,
-                'email' => strtolower(str_replace(' ', '.', $name)) . '@example.com',
+                'name' => $userData['name'],
+                'email' => $userData['email'],
                 'avatar' => $this->generateAvatar(),
             ]);
             $users->push($user);
         }
 
-        $startDate = now()->subDays(30);
-        $wajibKeys = array_keys(\App\Services\IbadahService::WAJIB);
-        $sunnahKeys = array_keys(\App\Services\IbadahService::SUNNAH);
-        $requiredForPerfect = \App\Services\IbadahService::REQUIRED_FOR_PERFECT;
-
         foreach ($users as $index => $user) {
-            // Determine diligence level untuk variasi leaderboard
-            $diligenceLevel = match (true) {
-                $index < 3 => 95,   // Top 3: sangat rajin (95% perfect days)
-                $index < 8 => 80,   // Next 5: rajin (80%)
-                $index < 15 => 60,  // Next 7: sedang (60%)
-                default => 35,      // Sisanya: jarang (35%)
+            // Determine diligence level untuk variasi (perfect day chance)
+            $diligenceLevel = match ($index) {
+                0 => 90,  // Admin: sangat rajin
+                1 => 75,  // User 1: rajin
+                2 => 60,  // User 2: sedang
+                default => 50,
             };
 
-            // Loop 30 hari terakhir
-            for ($day = 0; $day < 30; $day++) {
-                $date = $startDate->copy()->addDays($day)->toDateString();
-                
+            // Generate unique sunnah profile untuk user ini
+            $sunnahProfile = $this->generateSunnahProfile();
+
+            // Loop semua tanggal bulan ini yang tersedia
+            foreach ($availableDates as $day) {
+                $date = $day['gregorian_date'];
+
                 $isPerfect = rand(0, 100) < $diligenceLevel;
                 $tasksCompleted = [];
-                
-                if ($isPerfect) {
-                    // Perfect day: semua required = true
-                    foreach ($requiredForPerfect as $key) {
+
+                // Wajib tasks
+                foreach ($wajibKeys as $key) {
+                    if ($isPerfect) {
                         $tasksCompleted[$key] = true;
+                    } else {
+                        // Tidak perfect: 50-70% chance untuk wajib
+                        $tasksCompleted[$key] = rand(0, 100) < 60;
                     }
-                    // Sunnah lainnya: high chance
-                    foreach ($sunnahKeys as $key) {
-                        if (!in_array($key, $requiredForPerfect)) {
-                            $tasksCompleted[$key] = rand(0, 100) < 75;
-                        }
+                }
+
+                // Sunnah tasks berdasarkan profile user
+                foreach ($this->sunnahKeys as $key) {
+                    // Base chance dari profile + sedikit variasi harian
+                    $baseChance = $sunnahProfile[$key] ?? 50;
+                    $dailyVariation = rand(-15, 15);
+                    $finalChance = max(10, min(98, $baseChance + $dailyVariation));
+
+                    // Jika perfect day, tingkatkan chance sunnah
+                    if ($isPerfect) {
+                        $finalChance = min(98, $finalChance + 15);
                     }
-                } else {
-                    // Not perfect: randomize semua
-                    foreach (array_merge($wajibKeys, $sunnahKeys) as $key) {
-                        $tasksCompleted[$key] = rand(0, 100) < 45;
+
+                    $tasksCompleted[$key] = rand(0, 100) < $finalChance;
+                }
+
+                // Recalculate isPerfect berdasarkan actual wajib completion
+                $actualPerfect = true;
+                foreach ($requiredForPerfect as $key) {
+                    if (!($tasksCompleted[$key] ?? false)) {
+                        $actualPerfect = false;
+                        break;
                     }
                 }
 
                 $user->dailyLogs()->create([
                     'date' => $date,
                     'tasks_completed' => $tasksCompleted,
-                    'is_perfect_day' => $isPerfect,
+                    'is_perfect_day' => $actualPerfect,
                 ]);
             }
         }
 
-        $this->command->info('✅ Seeded ' . count($islamicNames) . ' users dengan avatar dan 30 hari log ibadah!');
+        $this->command->info('✅ Seeded ' . $users->count() . ' users dengan data ' . $monthCalendar['hijri_month_name'] . ' ' . $monthCalendar['hijri_year'] . ' H!');
+        $this->command->info('📊 ' . $availableDates->count() . ' hari data per user');
     }
 }
