@@ -1,5 +1,19 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { router } from '@inertiajs/vue3'
+
+interface HeatmapDay {
+    hijri_day: number
+    gregorian_date: string
+    gregorian_formatted: string
+    hijri_formatted: string
+    is_today: boolean
+    is_past: boolean
+    is_future: boolean
+    has_log: boolean
+    is_perfect: boolean
+    tasks_completed: Record<string, boolean>
+    completion_count: number
+}
 
 interface WajibStats {
     shalat_5_waktu: number
@@ -9,21 +23,58 @@ interface WajibStats {
 const props = defineProps<{
     stats: WajibStats
     totalDays: number
+    hijriMonth: string
+    hijriYear: number
+    heatmapData: HeatmapDay[]
+    selectedDate: string
 }>()
 
-const percentages = computed(() => {
-    if (props.totalDays === 0) return { shalat: 0, puasa: 0 }
-    return {
-        shalat: Math.round((props.stats.shalat_5_waktu / props.totalDays) * 100),
-        puasa: Math.round((props.stats.puasa / props.totalDays) * 100),
+// Helper to determine the status color/class for a day
+const getDayClass = (day: HeatmapDay) => {
+    // Base classes
+    let classes = ''
+    
+    // Selection state (High Priority)
+    if (day.gregorian_date === props.selectedDate) {
+        classes += ' ring-2 ring-white ring-offset-2 ring-offset-gray-900 z-10'
     }
-})
 
-// SVG Circle Config
-const radius = 30
-const circumference = 2 * Math.PI * radius
-const strokeDashoffset = (percent: number) => {
-    return circumference - (percent / 100) * circumference
+    if (day.is_future) {
+        return classes + ' bg-gray-800/50 border-gray-700 cursor-not-allowed opacity-50'
+    }
+    
+    if (day.is_perfect) {
+        return classes + ' bg-emerald-500 border-emerald-400 hover:border-emerald-300 cursor-pointer hover:scale-105 shadow-[0_0_15px_rgba(16,185,129,0.3)]'
+    }
+    
+    if (day.has_log) {
+        // Logged but not perfect (Partial)
+        // Check if at least one Wajib is done
+        // Note: tasks_completed values are booleans
+        const completed = day.tasks_completed || {};
+        const wajibDone = !!completed['shalat_5_waktu'] || !!completed['puasa'];
+        
+        if (wajibDone) {
+            return classes + ' bg-emerald-700 border-emerald-500 hover:border-emerald-400 cursor-pointer hover:scale-105'
+        } else if (day.completion_count > 0) {
+            // Did Sunnah but not Wajib -> Amber/Yellowish to differentiate
+             return classes + ' bg-amber-900/50 border-amber-700/50 hover:border-amber-600 cursor-pointer hover:scale-105'
+        } else {
+             return classes + ' bg-gray-700/50 border-gray-600 hover:border-gray-500 cursor-pointer hover:scale-105'
+        }
+    }
+    
+    // Empty/No Log
+    return classes + ' bg-gray-800 border-gray-700 hover:border-gray-600 cursor-pointer hover:scale-105'
+}
+
+const navigateToDate = (day: HeatmapDay) => {
+    if (day.is_future) return
+    
+    router.get(route('dashboard'), { date: day.gregorian_date }, {
+        preserveState: true,
+        preserveScroll: true,
+    })
 }
 </script>
 
@@ -33,95 +84,75 @@ const strokeDashoffset = (percent: number) => {
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-white flex items-center gap-2">
                 <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                Profil Wajib
+                {{ hijriMonth }} {{ hijriYear }} H
             </h3>
-            <div class="text-xs text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full">
-                {{ totalDays }} hari
-            </div>
-        </div>
-
-        <!-- Rings Container -->
-        <div class="flex items-center justify-center gap-6 sm:gap-10 py-2">
             
-            <!-- Shalat Ring -->
-            <div class="flex flex-col items-center">
-                <div class="relative w-24 h-24">
-                    <!-- Background Circle -->
-                    <svg class="w-full h-full transform -rotate-90">
-                        <circle
-                            cx="48"
-                            cy="48"
-                            :r="radius"
-                            stroke="currentColor"
-                            stroke-width="6"
-                            fill="transparent"
-                            class="text-gray-800"
-                        />
-                        <!-- Progress Circle -->
-                        <circle
-                            cx="48"
-                            cy="48"
-                            :r="radius"
-                            stroke="currentColor"
-                            stroke-width="6"
-                            fill="transparent"
-                            :stroke-dasharray="circumference"
-                            :stroke-dashoffset="strokeDashoffset(percentages.shalat)"
-                            stroke-linecap="round"
-                            class="text-emerald-500 transition-all duration-1000 ease-out"
-                        />
-                    </svg>
-                    <!-- Center Text -->
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <span class="text-lg font-bold text-white">{{ percentages.shalat }}%</span>
-                    </div>
-                </div>
-                <div class="text-center mt-1">
-                    <span class="block text-emerald-400 font-bold text-sm">{{ stats.shalat_5_waktu }} Full</span>
-                    <span class="text-[10px] text-gray-400 uppercase tracking-wider">Shalat 5 Waktu</span>
-                </div>
+            <!-- Legend (optional or minimal) -->
+             <div class="flex items-center gap-2 text-[10px] text-gray-400">
+                <span class="flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-sm bg-gray-800 border border-gray-700"></span>
+                    Kosong
+                </span>
+                <span class="flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-sm bg-emerald-800/80 border border-emerald-600"></span>
+                    Isi
+                </span>
+                <span class="flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-sm bg-emerald-500 border border-emerald-400"></span>
+                    Perfect
+                </span>
             </div>
-
-            <!-- Puasa Ring -->
-            <div class="flex flex-col items-center">
-                <div class="relative w-24 h-24">
-                    <!-- Background Circle -->
-                    <svg class="w-full h-full transform -rotate-90">
-                        <circle
-                            cx="48"
-                            cy="48"
-                            :r="radius"
-                            stroke="currentColor"
-                            stroke-width="6"
-                            fill="transparent"
-                            class="text-gray-800"
-                        />
-                        <!-- Progress Circle -->
-                        <circle
-                            cx="48"
-                            cy="48"
-                            :r="radius"
-                            stroke="currentColor"
-                            stroke-width="6"
-                            fill="transparent"
-                            :stroke-dasharray="circumference"
-                            :stroke-dashoffset="strokeDashoffset(percentages.puasa)"
-                            stroke-linecap="round"
-                            class="text-teal-400 transition-all duration-1000 ease-out"
-                        />
-                    </svg>
-                    <!-- Center Text -->
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <span class="text-lg font-bold text-white">{{ percentages.puasa }}%</span>
-                    </div>
-                </div>
-                <div class="text-center mt-1">
-                    <span class="block text-teal-400 font-bold text-sm">{{ stats.puasa }} Hari</span>
-                    <span class="text-[10px] text-gray-400 uppercase tracking-wider">Puasa</span>
-                </div>
-            </div>
-
         </div>
+
+        <!-- Calendar Grid -->
+        <div class="grid grid-cols-6 sm:grid-cols-7 gap-2">
+            <button
+                v-for="day in heatmapData"
+                :key="day.hijri_day"
+                @click="navigateToDate(day)"
+                :disabled="day.is_future"
+                class="relative aspect-square rounded-xl border-2 transition-all duration-300 flex flex-col items-center justify-center group"
+                :class="getDayClass(day)"
+                :title="`${day.hijri_formatted}\n${day.gregorian_formatted}${day.is_perfect ? '\n✓ Perfect Day!' : ''}`"
+            >
+                <!-- Day Number -->
+                <span 
+                    class="text-sm font-bold"
+                    :class="day.is_perfect ? 'text-white' : day.is_future ? 'text-gray-600' : 'text-gray-400 group-hover:text-gray-200'"
+                >
+                    {{ day.hijri_day }}
+                </span>
+
+                <!-- Perfect Star Indicator -->
+                <div v-if="day.is_perfect" class="absolute -top-1 -right-1">
+                     <lord-icon
+                        src="https://cdn.lordicon.com/surjmvno.json"
+                        trigger="in"
+                        colors="primary:#fbbf24,secondary:#f59e0b"
+                        style="width:20px;height:20px">
+                    </lord-icon>
+                </div>
+
+                <!-- Today Indicator -->
+                <span
+                    v-if="day.is_today"
+                    class="absolute -bottom-1 w-8 h-1 bg-amber-400/80 rounded-full blur-[2px]"
+                ></span>
+            </button>
+        </div>
+        
+        <!-- Summary Text -->
+         <div class="mt-4 pt-4 border-t border-gray-700/50 flex justify-between text-xs text-gray-400">
+             <div>
+                <span class="text-emerald-400 font-bold">{{ stats.shalat_5_waktu }}</span> Shalat Full
+             </div>
+             <div>
+                <span class="text-emerald-400 font-bold">{{ stats.puasa }}</span> Puasa
+             </div>
+             <div>
+                <span class="text-amber-400 font-bold">{{ heatmapData.filter(d => d.is_perfect).length }}</span> Perfect Days
+             </div>
+         </div>
     </div>
 </template>
 

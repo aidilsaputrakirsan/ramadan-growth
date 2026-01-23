@@ -56,7 +56,7 @@ class DashboardController extends Controller
         $dailyLogs = \App\Models\DailyLog::forUser($user->id)
             ->whereIn('date', $monthDates)
             ->get()
-            ->keyBy('date');
+            ->keyBy(fn($log) => $log->date->format('Y-m-d'));
 
         // Merge calendar with log data
         $heatmapData = collect($monthCalendar['days'])->map(function ($day) use ($dailyLogs) {
@@ -86,6 +86,7 @@ class DashboardController extends Controller
             'selectedDate' => $date,
             'dateInfo' => $dateInfo,
             'heatmapData' => $heatmapData,
+            'hijriMonthName' => $monthCalendar['hijri_month_name'],
             'hijriYear' => $monthCalendar['hijri_year'],
             'sunnahStats' => $sunnahStats,
             'wajibStats' => [

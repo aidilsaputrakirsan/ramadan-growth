@@ -83,6 +83,13 @@ const ibadahGroups = {
 // Current selected date - sync with backend
 const selectedDate = ref((page.props.selectedDate as string) || new Date().toISOString().split('T')[0]);
 
+// Ensure selectedDate updates when props change (navigation via chart)
+watch(() => page.props.selectedDate, (newDate) => {
+    if (newDate) {
+        selectedDate.value = newDate as string;
+    }
+});
+
 // Save status for better UI feedback
 const saveStatus = ref<'idle' | 'saving' | 'saved'>('idle');
 let savedTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -158,7 +165,7 @@ const autoSave = () => {
     saveTimeout = setTimeout(() => {
         form.post(route('daily-log.store'), {
             preserveScroll: true,
-            preserveState: false, // Allow full refresh
+            preserveState: true, // Keep state to prevent UI glitches
             onSuccess: () => {
                 saveStatus.value = 'saved';
                 savedTimeout = setTimeout(() => {
@@ -324,6 +331,10 @@ const toggleTask = (key: string) => {
                 v-if="page.props.wajibStats && page.props.totalMonthDays > 0"
                 :stats="page.props.wajibStats"
                 :total-days="page.props.totalMonthDays"
+                :hijri-month="page.props.hijriMonthName"
+                :hijri-year="page.props.hijriYear"
+                :heatmap-data="page.props.heatmapData"
+                :selected-date="selectedDate"
             />
 
             <!-- Sunnah Radar Chart -->

@@ -16,10 +16,13 @@ createInertiaApp({
             import.meta.glob<DefineComponent>('./Pages/**/*.vue'),
         ),
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
+        const app = createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(ZiggyVue)
-            .mount(el);
+            .use(ZiggyVue);
+
+        app.config.compilerOptions.isCustomElement = (tag) => tag === 'lord-icon';
+
+        app.mount(el);
     },
     progress: {
         color: '#4B5563',
