@@ -22,7 +22,7 @@ import { Link } from '@inertiajs/vue3';
             <Link href="/" class="inline-block mb-3">
                 <RamadanLogo size="md" :animated="true" />
             </Link>
-            <h1 class="text-2xl font-bold text-white">Ramadan Growth</h1>
+            <h1 class="text-2xl font-bold text-white">Ramadan Tracker</h1>
             <p class="text-sm text-emerald-300/80 mt-1">Fastabiqul Khairat</p>
         </div>
 

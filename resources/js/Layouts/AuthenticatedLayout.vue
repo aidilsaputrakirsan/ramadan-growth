@@ -83,7 +83,7 @@ const showLogoutConfirm = ref(false);
                     <!-- Logo -->
                     <Link :href="route('dashboard')" class="flex items-center gap-3">
                         <RamadanLogo size="sm" :animated="true" class="!w-10 !h-10" />
-                        <span class="font-bold text-white">Ramadan Growth</span>
+                        <span class="font-bold text-white">Ramadan Tracker</span>
                     </Link>
 
                     <!-- Desktop Nav Links -->
@@ -153,7 +153,7 @@ const showLogoutConfirm = ref(false);
             <div class="flex items-center justify-between px-4 py-3">
                 <Link :href="route('dashboard')" class="flex items-center gap-2">
                     <RamadanLogo size="sm" :animated="true" class="!w-8 !h-8" />
-                    <span class="font-bold text-white text-sm">Ramadan Growth</span>
+                    <span class="font-bold text-white text-sm">Ramadan Tracker</span>
                 </Link>
                 <button 
                     @click="showLogoutConfirm = true"
