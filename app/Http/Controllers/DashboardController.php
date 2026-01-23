@@ -93,7 +93,7 @@ class DashboardController extends Controller
                 'shalat_5_waktu' => $dailyLogs->filter(fn($log) => ($log->tasks_completed['shalat_5_waktu'] ?? false) === true)->count(),
                 'puasa' => $dailyLogs->filter(fn($log) => ($log->tasks_completed['puasa'] ?? false) === true)->count(),
             ],
-            'totalMonthDays' => $dailyLogs->count(),
+            'totalMonthDays' => $heatmapData->count(),
         ]);
     }
 }
