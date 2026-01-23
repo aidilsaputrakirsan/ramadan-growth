@@ -10,31 +10,37 @@ class StreakService
     /**
      * Get the current streak of consecutive perfect days for a user.
      * The streak counts back from the current date.
+     *
+     * OPTIMIZED: Single query instead of N+1 queries (was: 1 query per day)
      */
     public function getCurrentStreak(int $userId): int
     {
         $today = Carbon::today();
+
+        // Fetch all perfect days in ONE query, ordered by date descending
+        // Limit to last 60 days for performance (realistic streak limit)
+        $perfectDays = DailyLog::forUser($userId)
+            ->perfectDays()
+            ->where('date', '<=', $today)
+            ->where('date', '>=', $today->copy()->subDays(60))
+            ->orderBy('date', 'desc')
+            ->pluck('date')
+            ->map(fn($date) => Carbon::parse($date)->toDateString());
+
+        if ($perfectDays->isEmpty()) {
+            return 0;
+        }
+
         $streak = 0;
         $checkDate = $today->copy();
 
-        // Check each day going backwards
-        while (true) {
-            $log = DailyLog::forUser($userId)
-                ->where('date', $checkDate->toDateString())
-                ->first();
+        // If today is not a perfect day, start from yesterday
+        if (!$perfectDays->contains($checkDate->toDateString())) {
+            $checkDate->subDay();
+        }
 
-            // If no log for this day or not a perfect day, check if we should continue
-            if (!$log || !$log->is_perfect_day) {
-                // If today is not a perfect day yet, check from yesterday
-                if ($checkDate->equalTo($today) && $streak === 0) {
-                    $checkDate->subDay();
-                    continue;
-                }
-                // Otherwise, streak is broken
-                break;
-            }
-
-            // This day is a perfect day
+        // Count consecutive days in memory (no more queries!)
+        while ($perfectDays->contains($checkDate->toDateString())) {
             $streak++;
             $checkDate->subDay();
         }

@@ -4,7 +4,7 @@ import SunnahRadarChart from '@/Components/SunnahRadarChart.vue';
 import WajibStatsChart from '@/Components/WajibStatsChart.vue';
 import { Head, useForm, usePage, router } from '@inertiajs/vue3';
 import { PageProps } from '@/types';
-import { watch, computed, ref } from 'vue';
+import { watch, computed, ref, onUnmounted } from 'vue';
 
 interface DateInfo {
     gregorian: {
@@ -219,6 +219,12 @@ const toggleTask = (key: string) => {
     isUserAction = true;
     form.tasks_completed[key] = !form.tasks_completed[key];
 };
+
+// Cleanup timeouts when component unmounts to prevent memory leaks
+onUnmounted(() => {
+    if (saveTimeout) clearTimeout(saveTimeout);
+    if (savedTimeout) clearTimeout(savedTimeout);
+});
 </script>
 
 <template>
