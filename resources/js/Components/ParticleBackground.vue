@@ -1,198 +1,86 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
-
-interface Particle {
-    x: number;
-    y: number;
-    size: number;
-    speedX: number;
-    speedY: number;
-    opacity: number;
-    twinkleSpeed: number;
-    twinkleDirection: number;
-}
-
-const canvas = ref<HTMLCanvasElement | null>(null);
-let ctx: CanvasRenderingContext2D | null = null;
-let particles: Particle[] = [];
-let animationId: number | null = null;
-let width = 0;
-let height = 0;
-let isMobile = false;
-
-// Multi-color palette for warm gradient theme
-const starColors = [
-    { fill: '#c084fc', glow: 'rgba(192, 132, 252, 0.6)', inner: '#e9d5ff' },  // purple-400
-    { fill: '#f472b6', glow: 'rgba(244, 114, 182, 0.6)', inner: '#fce7f3' },  // pink-400
-    { fill: '#38bdf8', glow: 'rgba(56, 189, 248, 0.6)', inner: '#e0f2fe' },   // sky-400
-    { fill: '#fbbf24', glow: 'rgba(251, 191, 36, 0.6)', inner: '#fef3c7' },   // amber-400
-    { fill: '#34d399', glow: 'rgba(52, 211, 153, 0.6)', inner: '#d1fae5' },   // emerald-400
-    { fill: '#fb923c', glow: 'rgba(251, 146, 60, 0.6)', inner: '#ffedd5' },   // orange-400
-];
-
-// Jumlah particle disesuaikan untuk mobile (lebih sedikit = lebih ringan)
-const getParticleCount = () => {
-    return isMobile ? 20 : 50;
-};
-
-const createParticle = (): Particle => ({
-    x: Math.random() * width,
-    y: Math.random() * height,
-    size: Math.random() * 2 + 1,
-    speedX: (Math.random() - 0.5) * 0.3,
-    speedY: (Math.random() - 0.5) * 0.3,
-    opacity: Math.random() * 0.5 + 0.3,
-    twinkleSpeed: Math.random() * 0.02 + 0.01,
-    twinkleDirection: 1,
-});
-
-const initParticles = () => {
-    particles = [];
-    const count = getParticleCount();
-    for (let i = 0; i < count; i++) {
-        particles.push(createParticle());
-    }
-};
-
-const drawStar = (x: number, y: number, size: number, opacity: number, index: number) => {
-    if (!ctx) return;
-
-    const colorSet = starColors[index % starColors.length];
-
-    ctx.save();
-    ctx.globalAlpha = opacity;
-
-    // Glow effect
-    // Glow effect
-    if (!isMobile) {
-        ctx.shadowBlur = size * 3;
-        ctx.shadowColor = colorSet.glow;
-    }
-
-    // Star shape
-    ctx.fillStyle = colorSet.fill;
-    ctx.beginPath();
-    for (let i = 0; i < 5; i++) {
-        const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
-        const x1 = x + Math.cos(angle) * size;
-        const y1 = y + Math.sin(angle) * size;
-        if (i === 0) {
-            ctx.moveTo(x1, y1);
-        } else {
-            ctx.lineTo(x1, y1);
-        }
-    }
-    ctx.closePath();
-    ctx.fill();
-
-    // Inner glow
-    ctx.beginPath();
-    ctx.arc(x, y, size * 0.5, 0, Math.PI * 2);
-    ctx.fillStyle = colorSet.inner;
-    ctx.fill();
-
-    ctx.restore();
-};
-
-const drawCrescent = () => {
-    if (!ctx) return;
-
-    const x = width * 0.85;
-    const y = height * 0.15;
-    const radius = Math.min(width, height) * 0.08;
-
-    ctx.save();
-    ctx.globalAlpha = 0.15;
-
-    // Outer glow - purple
-    // Outer glow - purple
-    if (!isMobile) {
-        ctx.shadowBlur = 30;
-        ctx.shadowColor = 'rgba(192, 132, 252, 0.5)';
-    }
-
-    // Crescent moon - purple
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.fillStyle = '#c084fc';
-    ctx.fill();
-
-    // Cut out inner circle to create crescent
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    ctx.arc(x + radius * 0.35, y - radius * 0.1, radius * 0.85, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.restore();
-};
-
-const animate = () => {
-    if (!ctx || !canvas.value) return;
-
-    ctx.clearRect(0, 0, width, height);
-
-    // Draw crescent moon
-    drawCrescent();
-
-    // Update and draw particles
-    particles.forEach((particle, index) => {
-        // Update position
-        particle.x += particle.speedX;
-        particle.y += particle.speedY;
-
-        // Twinkle effect
-        particle.opacity += particle.twinkleSpeed * particle.twinkleDirection;
-        if (particle.opacity >= 0.8 || particle.opacity <= 0.2) {
-            particle.twinkleDirection *= -1;
-        }
-
-        // Wrap around edges
-        if (particle.x < 0) particle.x = width;
-        if (particle.x > width) particle.x = 0;
-        if (particle.y < 0) particle.y = height;
-        if (particle.y > height) particle.y = 0;
-
-        // Draw star with color based on index
-        drawStar(particle.x, particle.y, particle.size, particle.opacity, index);
-    });
-
-    animationId = requestAnimationFrame(animate);
-};
-
-const handleResize = () => {
-    if (!canvas.value) return;
-
-    width = window.innerWidth;
-    height = window.innerHeight;
-    isMobile = width < 768;
-    canvas.value.width = width;
-    canvas.value.height = height;
-
-    initParticles();
-};
-
-onMounted(() => {
-    if (!canvas.value) return;
-
-    ctx = canvas.value.getContext('2d');
-    handleResize();
-    animate();
-
-    window.addEventListener('resize', handleResize);
-});
-
-onUnmounted(() => {
-    if (animationId) {
-        cancelAnimationFrame(animationId);
-    }
-    window.removeEventListener('resize', handleResize);
-});
+/**
+ * Optimized Background Component
+ * Uses CSS Animations instead of Canvas/JS for maximum performance on mobile (iPhone 13, etc.)
+ */
 </script>
 
 <template>
-    <canvas
-        ref="canvas"
-        class="fixed inset-0 pointer-events-none z-0"
-        aria-hidden="true"
-    />
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-slate-950" aria-hidden="true">
+        <!-- Mesh Gradient Layers -->
+        <div class="absolute inset-0 opacity-40">
+            <div class="mesh-blob blob-1"></div>
+            <div class="mesh-blob blob-2"></div>
+            <div class="mesh-blob blob-3"></div>
+        </div>
+
+        <!-- Subtle Stars (Static/CSS) -->
+        <div class="absolute inset-0 stars-overlay opacity-30"></div>
+
+        <!-- Crescent Moon (Pure CSS/SVG) -->
+        <div class="absolute top-[10%] right-[10%] opacity-20">
+            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="40" fill="#c084fc" />
+                <circle cx="65" cy="40" r="35" fill="rgb(2 6 23)" />
+            </svg>
+        </div>
+    </div>
 </template>
+
+<style scoped>
+.mesh-blob {
+    @apply absolute rounded-full blur-[80px] md:blur-[120px] mix-blend-screen animate-mesh;
+}
+
+.blob-1 {
+    width: 60%;
+    height: 50%;
+    background: radial-gradient(circle, rgba(192, 132, 252, 0.4) 0%, transparent 70%);
+    top: -10%;
+    left: -10%;
+    animation-duration: 25s;
+}
+
+.blob-2 {
+    width: 50%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, transparent 70%);
+    bottom: -10%;
+    right: -10%;
+    animation-duration: 20s;
+    animation-delay: -5s;
+}
+
+.blob-3 {
+    width: 40%;
+    height: 40%;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, transparent 70%);
+    top: 30%;
+    left: 40%;
+    animation-duration: 15s;
+    animation-delay: -2s;
+}
+
+@keyframes mesh {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(10%, 15%) scale(1.1); }
+    66% { transform: translate(-5%, 20%) scale(0.9); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+.animate-mesh {
+    animation: mesh infinite linear alternate;
+}
+
+.stars-overlay {
+    background-image: 
+        radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 80px 120px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 110px 40px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 150px 150px, #ffffff, rgba(0,0,0,0));
+    background-size: 200px 200px;
+    background-repeat: repeat;
+}
+</style>
