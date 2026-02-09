@@ -18,6 +18,7 @@ let particles: Particle[] = [];
 let animationId: number | null = null;
 let width = 0;
 let height = 0;
+let isMobile = false;
 
 // Multi-color palette for warm gradient theme
 const starColors = [
@@ -31,8 +32,7 @@ const starColors = [
 
 // Jumlah particle disesuaikan untuk mobile (lebih sedikit = lebih ringan)
 const getParticleCount = () => {
-    const isMobile = window.innerWidth < 768;
-    return isMobile ? 30 : 50;
+    return isMobile ? 20 : 50;
 };
 
 const createParticle = (): Particle => ({
@@ -63,8 +63,11 @@ const drawStar = (x: number, y: number, size: number, opacity: number, index: nu
     ctx.globalAlpha = opacity;
 
     // Glow effect
-    ctx.shadowBlur = size * 3;
-    ctx.shadowColor = colorSet.glow;
+    // Glow effect
+    if (!isMobile) {
+        ctx.shadowBlur = size * 3;
+        ctx.shadowColor = colorSet.glow;
+    }
 
     // Star shape
     ctx.fillStyle = colorSet.fill;
@@ -102,8 +105,11 @@ const drawCrescent = () => {
     ctx.globalAlpha = 0.15;
 
     // Outer glow - purple
-    ctx.shadowBlur = 30;
-    ctx.shadowColor = 'rgba(192, 132, 252, 0.5)';
+    // Outer glow - purple
+    if (!isMobile) {
+        ctx.shadowBlur = 30;
+        ctx.shadowColor = 'rgba(192, 132, 252, 0.5)';
+    }
 
     // Crescent moon - purple
     ctx.beginPath();
@@ -158,6 +164,7 @@ const handleResize = () => {
 
     width = window.innerWidth;
     height = window.innerHeight;
+    isMobile = width < 768;
     canvas.value.width = width;
     canvas.value.height = height;
 
