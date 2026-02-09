@@ -42,6 +42,22 @@ const showLogoutConfirm = ref(false);
                     </Link>
 
                     <Link
+                        :href="route('garden')"
+                        class="flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all"
+                        :class="route().current('garden')
+                            ? 'text-emerald-400 bg-emerald-500/20'
+                            : 'text-gray-400'"
+                    >
+                        <div class="w-6 h-6 flex items-center justify-center transition-all" 
+                            :class="route().current('garden') ? 'text-emerald-400' : 'text-gray-400'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                                <path d="M12 19V5M5 11l7-7 7 7M5 19l7-7 7 7" />
+                            </svg>
+                        </div>
+                        <span class="text-[10px] font-medium">Pohon</span>
+                    </Link>
+
+                    <Link
                         v-if="$page.props.auth.user.is_admin"
                         :href="route('admin.users.index')"
                         class="flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all"
@@ -102,6 +118,20 @@ const showLogoutConfirm = ref(false);
                                 style="width:20px;height:20px">
                             </lord-icon>
                             Dashboard
+                        </Link>
+
+                        <Link
+                            :href="route('garden')"
+                            class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                            :class="route().current('garden')
+                                ? 'text-emerald-400 bg-emerald-500/20'
+                                : 'text-gray-300 hover:text-white hover:bg-white/5'"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" 
+                                class="w-5 h-5" :class="route().current('garden') ? 'text-emerald-400' : 'text-emerald-400/70'">
+                                <path d="M12 19V5M5 11l7-7 7 7M5 19l7-7 7 7" />
+                            </svg>
+                            Pohon Kebajikan
                         </Link>
 
                         <Link

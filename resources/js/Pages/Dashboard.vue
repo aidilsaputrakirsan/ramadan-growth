@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SunnahRadarChart from '@/Components/SunnahRadarChart.vue';
 import WajibStatsChart from '@/Components/WajibStatsChart.vue';
+import GrowingTree from '@/Components/GrowingTree.vue';
 import { Head, useForm, usePage, router } from '@inertiajs/vue3';
 import { PageProps } from '@/types';
 import { watch, computed, ref, onUnmounted } from 'vue';

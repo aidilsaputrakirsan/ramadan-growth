@@ -11,6 +11,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/kebun-pahala', [\App\Http\Controllers\GardenController::class, 'index'])->name('garden');
     Route::post('/daily-log', [\App\Http\Controllers\DailyLogController::class, 'store'])->name('daily-log.store');
 });
 
