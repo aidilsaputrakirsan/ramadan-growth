@@ -28,7 +28,7 @@ const submit = () => {
 
         <div class="mb-6 text-center">
             <h2 class="text-xl font-bold text-white">Daftar Akun Baru</h2>
-            <p class="text-sm text-emerald-300/80">Mari mulai perjalanan ibadahmu 🌙</p>
+            <p class="text-sm text-violet-300/80">Mari mulai perjalanan ibadahmu 🌙</p>
         </div>
 
         <form @submit.prevent="submit">
@@ -105,7 +105,7 @@ const submit = () => {
 
             <div class="mt-8 flex flex-col gap-4">
                 <PrimaryButton
-                    class="w-full justify-center py-3 bg-emerald-600 hover:bg-emerald-700 text-base rounded-xl transition-all shadow-lg shadow-emerald-900/30"
+                    class="w-full justify-center py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-base rounded-xl transition-all shadow-lg shadow-violet-900/30"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
@@ -116,7 +116,7 @@ const submit = () => {
                     <span class="text-sm text-gray-400">Sudah punya akun?</span>
                     <Link
                         :href="route('login')"
-                        class="ml-1 text-sm font-bold text-emerald-400 hover:text-emerald-300 underline-offset-4 hover:underline"
+                        class="ml-1 text-sm font-bold text-violet-400 hover:text-violet-300 underline-offset-4 hover:underline"
                     >
                         Masuk di sini
                     </Link>

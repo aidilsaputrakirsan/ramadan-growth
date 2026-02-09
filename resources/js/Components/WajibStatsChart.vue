@@ -44,7 +44,7 @@ const getDayClass = (day: HeatmapDay) => {
     }
     
     if (day.is_perfect) {
-        return classes + ' bg-emerald-500 border-emerald-400 hover:border-emerald-300 cursor-pointer hover:scale-105 shadow-[0_0_15px_rgba(16,185,129,0.3)]'
+        return classes + ' bg-teal-500 border-teal-400 hover:border-teal-300 cursor-pointer hover:scale-105 shadow-[0_0_15px_rgba(20,184,166,0.3)]'
     }
     
     if (day.has_log) {
@@ -55,10 +55,10 @@ const getDayClass = (day: HeatmapDay) => {
         const wajibDone = !!completed['shalat_5_waktu'] || !!completed['puasa'];
         
         if (wajibDone) {
-            return classes + ' bg-emerald-700 border-emerald-500 hover:border-emerald-400 cursor-pointer hover:scale-105'
+            return classes + ' bg-indigo-700 border-indigo-500 hover:border-indigo-400 cursor-pointer hover:scale-105'
         } else if (day.completion_count > 0) {
             // Did Sunnah but not Wajib -> Amber/Yellowish to differentiate
-             return classes + ' bg-amber-900/50 border-amber-700/50 hover:border-amber-600 cursor-pointer hover:scale-105'
+             return classes + ' bg-rose-900/50 border-rose-700/50 hover:border-rose-600 cursor-pointer hover:scale-105'
         } else {
              return classes + ' bg-gray-700/50 border-gray-600 hover:border-gray-500 cursor-pointer hover:scale-105'
         }
@@ -83,7 +83,7 @@ const navigateToDate = (day: HeatmapDay) => {
         <!-- Header -->
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                <span class="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
                 {{ hijriMonth }} {{ hijriYear }} H
             </h3>
             
@@ -94,11 +94,11 @@ const navigateToDate = (day: HeatmapDay) => {
                     Kosong
                 </span>
                 <span class="flex items-center gap-1">
-                    <span class="w-2 h-2 rounded-sm bg-emerald-800/80 border border-emerald-600"></span>
+                    <span class="w-2 h-2 rounded-sm bg-indigo-700 border border-indigo-500"></span>
                     Isi
                 </span>
                 <span class="flex items-center gap-1">
-                    <span class="w-2 h-2 rounded-sm bg-emerald-500 border border-emerald-400"></span>
+                    <span class="w-2 h-2 rounded-sm bg-teal-500 border border-teal-400"></span>
                     Perfect
                 </span>
             </div>
@@ -128,7 +128,7 @@ const navigateToDate = (day: HeatmapDay) => {
                      <lord-icon
                         src="https://cdn.lordicon.com/surjmvno.json"
                         trigger="in"
-                        colors="primary:#fbbf24,secondary:#f59e0b"
+                        colors="primary:#f472b6,secondary:#fb923c"
                         style="width:20px;height:20px">
                     </lord-icon>
                 </div>
@@ -136,7 +136,7 @@ const navigateToDate = (day: HeatmapDay) => {
                 <!-- Today Indicator -->
                 <span
                     v-if="day.is_today"
-                    class="absolute -bottom-1 w-8 h-1 bg-amber-400/80 rounded-full blur-[2px]"
+                    class="absolute -bottom-1 w-8 h-1 bg-pink-400/80 rounded-full blur-[2px]"
                 ></span>
             </button>
         </div>
@@ -144,13 +144,13 @@ const navigateToDate = (day: HeatmapDay) => {
         <!-- Summary Text -->
          <div class="mt-4 pt-4 border-t border-gray-700/50 flex justify-between text-xs text-gray-400">
              <div>
-                <span class="text-emerald-400 font-bold">{{ stats.shalat_5_waktu }}</span> Shalat Full
+                <span class="text-cyan-400 font-bold">{{ stats.shalat_5_waktu }}</span> Shalat Full
              </div>
              <div>
-                <span class="text-emerald-400 font-bold">{{ stats.puasa }}</span> Puasa
+                <span class="text-cyan-400 font-bold">{{ stats.puasa }}</span> Puasa
              </div>
              <div>
-                <span class="text-amber-400 font-bold">{{ heatmapData.filter(d => d.is_perfect).length }}</span> Perfect Days
+                <span class="text-pink-400 font-bold">{{ heatmapData.filter(d => d.is_perfect).length }}</span> Perfect Days
              </div>
          </div>
     </div>

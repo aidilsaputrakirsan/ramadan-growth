@@ -38,17 +38,17 @@ const getColor = (day: HeatmapDay): string => {
     }
 
     if (day.is_perfect) {
-        return 'bg-emerald-500 border-emerald-400 hover:border-emerald-300'
+        return 'bg-teal-500 border-teal-400 hover:border-teal-300'
     }
 
     // Partial completion - gradient based on count (max 8 tasks)
     const intensity = Math.min(day.completion_count / 8, 1)
     if (intensity < 0.3) {
-        return 'bg-emerald-900/60 border-emerald-800 hover:border-emerald-700'
+        return 'bg-indigo-900/60 border-indigo-800 hover:border-indigo-700'
     } else if (intensity < 0.6) {
-        return 'bg-emerald-700/70 border-emerald-600 hover:border-emerald-500'
+        return 'bg-indigo-700/70 border-indigo-600 hover:border-indigo-500'
     } else {
-        return 'bg-emerald-600/80 border-emerald-500 hover:border-emerald-400'
+        return 'bg-indigo-600/80 border-indigo-500 hover:border-indigo-400'
     }
 }
 
@@ -84,11 +84,11 @@ const weeks = computed(() => {
                     Kosong
                 </span>
                 <span class="flex items-center gap-1">
-                    <span class="w-3 h-3 rounded bg-emerald-700/70 border border-emerald-600"></span>
+                    <span class="w-3 h-3 rounded bg-indigo-700/70 border border-indigo-600"></span>
                     Partial
                 </span>
                 <span class="flex items-center gap-1">
-                    <span class="w-3 h-3 rounded bg-emerald-500 border border-emerald-400"></span>
+                    <span class="w-3 h-3 rounded bg-teal-500 border border-teal-400"></span>
                     Perfect
                 </span>
             </div>
@@ -111,14 +111,14 @@ const weeks = computed(() => {
                         getColor(day),
                         day.is_future ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:scale-105',
                         day.gregorian_date === selectedDate ? 'ring-2 ring-white ring-offset-2 ring-offset-gray-900' : '',
-                        day.is_today && day.gregorian_date !== selectedDate ? 'ring-2 ring-amber-400 ring-offset-1 ring-offset-gray-900' : ''
+                        day.is_today && day.gregorian_date !== selectedDate ? 'ring-2 ring-pink-400 ring-offset-1 ring-offset-gray-900' : ''
                     ]"
                     :title="`${day.hijri_formatted}\n${day.gregorian_formatted}${day.is_perfect ? '\n✓ Perfect Day!' : day.has_log ? `\n${day.completion_count}/8 ibadah` : ''}`"
                 >
                     <span
                         :class="[
                             'text-sm font-medium',
-                            day.is_future ? 'text-gray-600' : day.is_perfect ? 'text-white' : day.has_log ? 'text-emerald-200' : 'text-gray-400'
+                            day.is_future ? 'text-gray-600' : day.is_perfect ? 'text-white' : day.has_log ? 'text-indigo-200' : 'text-gray-400'
                         ]"
                     >
                         {{ day.hijri_day }}
@@ -137,7 +137,7 @@ const weeks = computed(() => {
                     <!-- Today indicator -->
                     <span
                         v-if="day.is_today"
-                        class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-amber-400 rounded-full"
+                        class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-pink-400 rounded-full"
                     ></span>
                 </button>
             </div>
@@ -146,11 +146,11 @@ const weeks = computed(() => {
         <!-- Stats Summary -->
         <div class="mt-4 pt-4 border-t border-gray-800 flex justify-between text-sm">
             <div class="text-gray-400">
-                <span class="text-emerald-400 font-semibold">{{ data.filter(d => d.is_perfect).length }}</span>
+                <span class="text-cyan-400 font-semibold">{{ data.filter(d => d.is_perfect).length }}</span>
                 Perfect Days
             </div>
             <div class="text-gray-400">
-                <span class="text-emerald-400 font-semibold">{{ data.filter(d => d.has_log && !d.is_future).length }}</span>
+                <span class="text-cyan-400 font-semibold">{{ data.filter(d => d.has_log && !d.is_future).length }}</span>
                 / {{ data.filter(d => !d.is_future).length }} Hari Terisi
             </div>
         </div>

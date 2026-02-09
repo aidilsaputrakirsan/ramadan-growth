@@ -54,7 +54,7 @@ const currentAvatarUrl = computed(() => {
         return props.modelValue;
     }
     // Default: generate dari nama user
-    return `https://api.dicebear.com/7.x/initials/svg?seed=${props.userName || 'User'}&backgroundColor=10b981`;
+    return `https://api.dicebear.com/7.x/initials/svg?seed=${props.userName || 'User'}&backgroundColor=7c3aed`;
 });
 
 const selectAvatar = (url: string) => {
@@ -89,7 +89,7 @@ const filteredAvatars = computed(() => {
         <!-- Current Avatar Display -->
         <div class="flex items-center gap-4">
             <div 
-                class="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 p-0.5 cursor-pointer hover:scale-105 transition-transform"
+                class="w-20 h-20 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 p-0.5 cursor-pointer hover:scale-105 transition-transform"
                 @click="showPicker = true"
             >
                 <img 
@@ -101,12 +101,12 @@ const filteredAvatars = computed(() => {
             <div>
                 <button 
                     @click="showPicker = true"
-                    class="text-sm text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-2"
+                    class="text-sm text-violet-400 hover:text-violet-300 font-medium flex items-center gap-2"
                 >
                     <lord-icon
                         src="https://cdn.lordicon.com/wloilxuq.json"
                         trigger="hover"
-                        colors="primary:#34d399"
+                        colors="primary:#a78bfa"
                         style="width:18px;height:18px">
                     </lord-icon>
                     Ganti Avatar
@@ -136,7 +136,7 @@ const filteredAvatars = computed(() => {
                                     src="https://cdn.lordicon.com/dxjqoygy.json"
                                     trigger="loop"
                                     delay="2000"
-                                    colors="primary:#34d399"
+                                    colors="primary:#a78bfa"
                                     style="width:24px;height:24px">
                                 </lord-icon>
                                 Pilih Avatar
@@ -154,7 +154,7 @@ const filteredAvatars = computed(() => {
                                 <button 
                                     @click="selectedStyle = null"
                                     class="px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all"
-                                    :class="!selectedStyle ? 'bg-emerald-500 text-white' : 'bg-white/10 text-gray-300 hover:bg-white/20'"
+                                    :class="!selectedStyle ? 'bg-violet-500 text-white' : 'bg-white/10 text-gray-300 hover:bg-white/20'"
                                 >
                                     Semua
                                 </button>
@@ -163,7 +163,7 @@ const filteredAvatars = computed(() => {
                                     :key="style.id"
                                     @click="selectedStyle = style.id"
                                     class="px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all"
-                                    :class="selectedStyle === style.id ? 'bg-emerald-500 text-white' : 'bg-white/10 text-gray-300 hover:bg-white/20'"
+                                    :class="selectedStyle === style.id ? 'bg-violet-500 text-white' : 'bg-white/10 text-gray-300 hover:bg-white/20'"
                                 >
                                     {{ style.name }}
                                 </button>
@@ -178,7 +178,7 @@ const filteredAvatars = computed(() => {
                                     :key="`${avatar.style}-${avatar.seed}`"
                                     @click="selectAvatar(avatar.url)"
                                     class="aspect-square rounded-xl bg-white/5 hover:bg-white/15 border-2 transition-all p-2 active:scale-95"
-                                    :class="modelValue === avatar.url ? 'border-emerald-500 bg-emerald-500/20' : 'border-transparent'"
+                                    :class="modelValue === avatar.url ? 'border-violet-500 bg-violet-500/20' : 'border-transparent'"
                                 >
                                     <img :src="avatar.url" :alt="avatar.seed" class="w-full h-full" loading="lazy" />
                                 </button>
@@ -195,7 +195,7 @@ const filteredAvatars = computed(() => {
                             </button>
                             <button 
                                 @click="showPicker = false"
-                                class="flex-1 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-500 font-medium text-sm transition-all active:scale-[0.98]"
+                                class="flex-1 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl hover:from-violet-500 hover:to-indigo-500 font-medium text-sm transition-all active:scale-[0.98]"
                             >
                                 Selesai
                             </button>

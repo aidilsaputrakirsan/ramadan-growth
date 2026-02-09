@@ -18,7 +18,7 @@ const avatarUrl = computed(() => {
         return props.user.avatar;
     }
     // Default: DiceBear initials
-    return `https://api.dicebear.com/7.x/initials/svg?seed=${props.user.name || 'User'}&backgroundColor=10b981`;
+    return `https://api.dicebear.com/7.x/initials/svg?seed=${props.user.name || 'User'}&backgroundColor=7c3aed`;
 });
 
 const sizeClasses = computed(() => {
@@ -34,13 +34,13 @@ const sizeClasses = computed(() => {
 
 const ringClasses = computed(() => {
     if (!props.showRing) return '';
-    return 'ring-2 ring-emerald-500/50';
+    return 'ring-2 ring-violet-500/50';
 });
 </script>
 
 <template>
     <div 
-        class="rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 p-0.5 flex-shrink-0"
+        class="rounded-full bg-gradient-to-br from-violet-400 to-purple-500 p-0.5 flex-shrink-0"
         :class="sizeClasses"
     >
         <img 

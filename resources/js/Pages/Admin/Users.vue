@@ -74,7 +74,7 @@ const deleteUser = (user: AdminUser) => {
                             src="https://cdn.lordicon.com/lecprnjb.json"
                             trigger="loop"
                             delay="2000"
-                            colors="primary:#fbbf24,secondary:#f59e0b"
+                            colors="primary:#fb923c,secondary:#f472b6"
                             style="width:40px;height:40px">
                         </lord-icon>
                         <div>
@@ -82,7 +82,7 @@ const deleteUser = (user: AdminUser) => {
                             <p class="text-xs text-gray-400">Total: {{ users.length }} user</p>
                         </div>
                     </div>
-                    <span class="text-[10px] bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full font-bold uppercase">
+                    <span class="text-[10px] bg-orange-500/20 text-orange-400 px-3 py-1 rounded-full font-bold uppercase">
                         Admin
                     </span>
                 </div>
@@ -97,7 +97,7 @@ const deleteUser = (user: AdminUser) => {
                 >
                     <div class="flex items-center gap-3">
                         <!-- Avatar -->
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white font-bold flex-shrink-0">
                             {{ user.name?.charAt(0)?.toUpperCase() }}
                         </div>
                         
@@ -105,14 +105,14 @@ const deleteUser = (user: AdminUser) => {
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2">
                                 <span class="text-white font-medium text-sm truncate">{{ user.name }}</span>
-                                <span v-if="user.is_admin" class="text-[9px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full font-bold">ADMIN</span>
+                                <span v-if="user.is_admin" class="text-[9px] bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded-full font-bold">ADMIN</span>
                             </div>
                             <div class="text-gray-400 text-xs truncate">{{ user.email }}</div>
                         </div>
                         
                         <!-- Stats -->
                         <div class="text-right flex-shrink-0">
-                            <div class="text-emerald-400 font-bold text-sm">{{ user.perfect_days_count }}</div>
+                            <div class="text-cyan-400 font-bold text-sm">{{ user.perfect_days_count }}</div>
                             <div class="text-gray-500 text-[10px]">hari</div>
                         </div>
                     </div>
@@ -209,7 +209,7 @@ const deleteUser = (user: AdminUser) => {
                         <button 
                             type="submit" 
                             :disabled="editForm.processing" 
-                            class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium text-sm transition-all active:scale-[0.98] disabled:opacity-50"
+                            class="flex-1 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl font-medium text-sm transition-all active:scale-[0.98] disabled:opacity-50"
                         >
                             Simpan
                         </button>
@@ -226,6 +226,6 @@ const deleteUser = (user: AdminUser) => {
 }
 
 .dark-input {
-    @apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all;
+    @apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all;
 }
 </style>

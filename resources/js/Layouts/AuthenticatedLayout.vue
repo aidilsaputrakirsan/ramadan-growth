@@ -10,64 +10,64 @@ const showLogoutConfirm = ref(false);
 </script>
 
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 relative">
+    <div class="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-indigo-950 relative">
         <!-- Particle Background -->
         <ParticleBackground />
         
         <!-- Decorative Blurs -->
         <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
-            <div class="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl"></div>
-            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl"></div>
         </div>
 
         <!-- Mobile Bottom Navigation -->
         <nav class="fixed bottom-0 left-0 right-0 z-50 sm:hidden">
-            <div class="bg-slate-900/95 backdrop-blur-xl border-t border-white/10 px-2 py-2 safe-area-bottom">
+            <div class="bg-slate-950/95 backdrop-blur-xl border-t border-white/10 px-2 py-2 safe-area-bottom">
                 <div class="flex justify-around items-center">
-                    <Link 
-                        :href="route('dashboard')" 
+                    <Link
+                        :href="route('dashboard')"
                         class="flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all"
-                        :class="route().current('dashboard') 
-                            ? 'text-emerald-400 bg-emerald-500/20' 
+                        :class="route().current('dashboard')
+                            ? 'text-violet-400 bg-violet-500/20'
                             : 'text-gray-400'"
                     >
                         <lord-icon
                             src="https://cdn.lordicon.com/wmwqvixz.json"
                             trigger="hover"
-                            :colors="route().current('dashboard') ? 'primary:#34d399' : 'primary:#9ca3af'"
+                            :colors="route().current('dashboard') ? 'primary:#a78bfa' : 'primary:#9ca3af'"
                             style="width:24px;height:24px">
                         </lord-icon>
                         <span class="text-[10px] font-medium">Home</span>
                     </Link>
 
-                    <Link 
+                    <Link
                         v-if="$page.props.auth.user.is_admin"
-                        :href="route('admin.users.index')" 
+                        :href="route('admin.users.index')"
                         class="flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all"
-                        :class="route().current('admin.users.*') 
-                            ? 'text-amber-400 bg-amber-500/20' 
+                        :class="route().current('admin.users.*')
+                            ? 'text-orange-400 bg-orange-500/20'
                             : 'text-gray-400'"
                     >
                         <lord-icon
                             src="https://cdn.lordicon.com/hwuyodym.json"
                             trigger="hover"
-                            :colors="route().current('admin.users.*') ? 'primary:#fbbf24' : 'primary:#9ca3af'"
+                            :colors="route().current('admin.users.*') ? 'primary:#fb923c' : 'primary:#9ca3af'"
                             style="width:24px;height:24px">
                         </lord-icon>
                         <span class="text-[10px] font-medium">Admin</span>
                     </Link>
-                    <Link 
-                        :href="route('profile.edit')" 
+                    <Link
+                        :href="route('profile.edit')"
                         class="flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all"
-                        :class="route().current('profile.edit') 
-                            ? 'text-emerald-400 bg-emerald-500/20' 
+                        :class="route().current('profile.edit')
+                            ? 'text-violet-400 bg-violet-500/20'
                             : 'text-gray-400'"
                     >
                         <lord-icon
                             src="https://cdn.lordicon.com/kthelypq.json"
                             trigger="hover"
-                            :colors="route().current('profile.edit') ? 'primary:#34d399' : 'primary:#9ca3af'"
+                            :colors="route().current('profile.edit') ? 'primary:#a78bfa' : 'primary:#9ca3af'"
                             style="width:24px;height:24px">
                         </lord-icon>
                         <span class="text-[10px] font-medium">Profil</span>
@@ -77,7 +77,7 @@ const showLogoutConfirm = ref(false);
         </nav>
 
         <!-- Desktop Top Navigation -->
-        <nav class="hidden sm:block sticky top-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/10">
+        <nav class="hidden sm:block sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-white/10">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex h-16 justify-between items-center">
                     <!-- Logo -->
@@ -88,34 +88,34 @@ const showLogoutConfirm = ref(false);
 
                     <!-- Desktop Nav Links -->
                     <div class="flex items-center gap-1">
-                        <Link 
+                        <Link
                             :href="route('dashboard')"
                             class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all"
-                            :class="route().current('dashboard') 
-                                ? 'text-emerald-400 bg-emerald-500/20' 
+                            :class="route().current('dashboard')
+                                ? 'text-violet-400 bg-violet-500/20'
                                 : 'text-gray-300 hover:text-white hover:bg-white/5'"
                         >
                             <lord-icon
                                 src="https://cdn.lordicon.com/wmwqvixz.json"
                                 trigger="hover"
-                                colors="primary:#34d399"
+                                colors="primary:#a78bfa"
                                 style="width:20px;height:20px">
                             </lord-icon>
                             Dashboard
                         </Link>
 
-                        <Link 
+                        <Link
                             v-if="$page.props.auth.user.is_admin"
                             :href="route('admin.users.index')"
                             class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all"
-                            :class="route().current('admin.users.*') 
-                                ? 'text-amber-400 bg-amber-500/20' 
-                                : 'text-amber-400/70 hover:text-amber-400 hover:bg-amber-500/10'"
+                            :class="route().current('admin.users.*')
+                                ? 'text-orange-400 bg-orange-500/20'
+                                : 'text-orange-400/70 hover:text-orange-400 hover:bg-orange-500/10'"
                         >
                             <lord-icon
                                 src="https://cdn.lordicon.com/hwuyodym.json"
                                 trigger="hover"
-                                colors="primary:#fbbf24"
+                                colors="primary:#fb923c"
                                 style="width:20px;height:20px">
                             </lord-icon>
                             Admin
@@ -149,7 +149,7 @@ const showLogoutConfirm = ref(false);
         </nav>
 
         <!-- Mobile Header -->
-        <header class="sm:hidden sticky top-0 z-40 bg-slate-900/90 backdrop-blur-xl border-b border-white/10">
+        <header class="sm:hidden sticky top-0 z-40 bg-slate-950/90 backdrop-blur-xl border-b border-white/10">
             <div class="flex items-center justify-between px-4 py-3">
                 <Link :href="route('dashboard')" class="flex items-center gap-2">
                     <RamadanLogo size="sm" :animated="true" class="!w-8 !h-8" />
@@ -187,7 +187,7 @@ const showLogoutConfirm = ref(false);
             >
                 <div v-if="showLogoutConfirm" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="showLogoutConfirm = false"></div>
-                    <div class="relative bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-sm text-center">
+                    <div class="relative bg-slate-950 border border-white/10 rounded-2xl p-6 w-full max-w-sm text-center">
                         <lord-icon
                             src="https://cdn.lordicon.com/moscwhoj.json"
                             trigger="loop"

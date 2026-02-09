@@ -84,7 +84,7 @@ const submit = () => {
                 <PrimaryButton
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
-                    class="bg-emerald-600 hover:bg-emerald-700"
+                    class="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500"
                 >
                     Masuk
                 </PrimaryButton>
@@ -92,7 +92,7 @@ const submit = () => {
 
             <div class="mt-6 text-center">
                 <span class="text-sm text-gray-400">Belum punya akun?</span>
-                <Link :href="route('register')" class="ml-1 text-sm font-medium text-emerald-400 hover:text-emerald-300">
+                <Link :href="route('register')" class="ml-1 text-sm font-medium text-violet-400 hover:text-violet-300">
                     Daftar Sekarang
                 </Link>
             </div>

@@ -5,6 +5,7 @@ import WajibStatsChart from '@/Components/WajibStatsChart.vue';
 import { Head, useForm, usePage, router } from '@inertiajs/vue3';
 import { PageProps } from '@/types';
 import { watch, computed, ref, onUnmounted } from 'vue';
+import { getTodayQuote } from '@/data/ramadanQuotes';
 
 interface DateInfo {
     gregorian: {
@@ -216,6 +217,8 @@ const hijriDate = computed(() => {
 // Computed for heatmap to ensure reactivity
 const heatmapData = computed(() => page.props.heatmapData || []);
 
+const todayQuote = computed(() => getTodayQuote());
+
 const toggleTask = (key: string) => {
     isUserAction = true;
     form.tasks_completed[key] = !form.tasks_completed[key];
@@ -247,11 +250,11 @@ onUnmounted(() => {
                     </button>
                     
                     <div class="text-center flex-1">
-                        <p class="text-emerald-400 text-xs font-medium mb-0.5">
+                        <p class="text-violet-400 text-xs font-medium mb-0.5">
                             {{ isToday ? 'Hari Ini' : 'Riwayat' }}
                         </p>
                         <p class="text-white text-sm font-bold">{{ formattedDate }}</p>
-                        <p v-if="hijriDate" class="text-amber-400/80 text-xs mt-0.5">{{ hijriDate }}</p>
+                        <p v-if="hijriDate" class="text-pink-400/80 text-xs mt-0.5">{{ hijriDate }}</p>
                     </div>
                     
                     <button 
@@ -271,34 +274,49 @@ onUnmounted(() => {
                 <button 
                     v-if="!isToday"
                     @click="goToToday"
-                    class="w-full py-2 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 rounded-lg text-emerald-400 text-xs font-medium transition-all active:scale-[0.98]"
+                    class="w-full py-2 bg-violet-500/20 hover:bg-violet-500/30 border border-violet-500/30 rounded-lg text-violet-400 text-xs font-medium transition-all active:scale-[0.98]"
                 >
                     Kembali ke Hari Ini
                 </button>
             </div>
 
-            <!-- Greeting Card -->
-            <div class="glass-card p-5 flex items-center gap-4">
-                <!-- Avatar -->
-                <div class="flex-shrink-0">
-                    <img 
-                        v-if="$page.props.auth.user.avatar" 
-                        :src="$page.props.auth.user.avatar.startsWith('http') ? $page.props.auth.user.avatar : '/storage/' + $page.props.auth.user.avatar" 
-                        alt="Avatar" 
-                        class="w-12 h-12 rounded-full border-2 border-emerald-500/50 object-cover bg-slate-800"
-                    >
-                    <div 
-                        v-else 
-                        class="w-12 h-12 rounded-full border-2 border-emerald-500/50 bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-lg"
-                    >
-                        {{ $page.props.auth.user.name.charAt(0) }}
+            <!-- Greeting Card with Daily Quote -->
+            <div class="glass-card p-5 overflow-hidden relative">
+                <!-- Gradient accent border kiri -->
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-pink-500 via-violet-500 to-cyan-500 rounded-l-2xl"></div>
+
+                <div class="flex items-center gap-4 mb-3">
+                    <!-- Avatar -->
+                    <div class="flex-shrink-0">
+                        <img
+                            v-if="$page.props.auth.user.avatar"
+                            :src="$page.props.auth.user.avatar.startsWith('http') ? $page.props.auth.user.avatar : '/storage/' + $page.props.auth.user.avatar"
+                            alt="Avatar"
+                            class="w-12 h-12 rounded-full border-2 border-violet-500/50 object-cover bg-slate-800"
+                        >
+                        <div
+                            v-else
+                            class="w-12 h-12 rounded-full border-2 border-violet-500/50 bg-violet-500/20 flex items-center justify-center text-violet-400 font-bold text-lg"
+                        >
+                            {{ $page.props.auth.user.name.charAt(0) }}
+                        </div>
+                    </div>
+
+                    <!-- Text -->
+                    <div>
+                        <p class="text-violet-400 text-sm font-medium mb-0.5">Assalamu'alaikum</p>
+                        <h1 class="text-white text-xl font-bold leading-tight">{{ $page.props.auth.user.name }}</h1>
                     </div>
                 </div>
-                
-                <!-- Text -->
-                <div>
-                    <p class="text-emerald-400 text-sm font-medium mb-0.5">Assalamu'alaikum</p>
-                    <h1 class="text-white text-xl font-bold leading-tight">{{ $page.props.auth.user.name }}</h1>
+
+                <!-- Daily Quran Quote -->
+                <div class="mt-3 pt-3 border-t border-white/5">
+                    <p class="text-gray-300/90 text-sm italic leading-relaxed">
+                        "{{ todayQuote.text }}"
+                    </p>
+                    <p class="text-pink-400/70 text-xs mt-1.5 font-medium">
+                        {{ todayQuote.surah }}
+                    </p>
                 </div>
             </div>
 
@@ -310,21 +328,21 @@ onUnmounted(() => {
                         src="https://cdn.lordicon.com/lsrcesku.json"
                         trigger="loop"
                         delay="2000"
-                        colors="primary:#f59e0b,secondary:#fbbf24"
+                        colors="primary:#fb923c,secondary:#f472b6"
                         style="width:48px;height:48px"
                         class="mx-auto">
                     </lord-icon>
                     <div class="text-3xl font-black text-white mt-1">{{ page.props.currentStreak || 0 }}</div>
                     <div class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">Hari Streak</div>
                 </div>
-                
+
                 <!-- Perfect Days -->
                 <div class="glass-card p-4 text-center group hover:scale-[1.02] transition-transform">
                     <lord-icon
                         src="https://cdn.lordicon.com/surjmvno.json"
                         trigger="loop"
                         delay="2500"
-                        colors="primary:#fbbf24,secondary:#f59e0b"
+                        colors="primary:#f472b6,secondary:#fb923c"
                         style="width:48px;height:48px"
                         class="mx-auto">
                     </lord-icon>
@@ -355,11 +373,11 @@ onUnmounted(() => {
             <div class="glass-card p-5">
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-sm font-medium text-gray-300">Progress Hari Ini</span>
-                    <span class="text-emerald-400 font-bold">{{ todayProgress }}%</span>
+                    <span class="text-cyan-400 font-bold">{{ todayProgress }}%</span>
                 </div>
                 <div class="h-3 bg-white/10 rounded-full overflow-hidden">
                     <div 
-                        class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500"
+                        class="h-full bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 rounded-full transition-all duration-500"
                         :style="{ width: todayProgress + '%' }"
                     ></div>
                 </div>
@@ -381,13 +399,13 @@ onUnmounted(() => {
                     mode="out-in"
                 >
                     <span v-if="saveStatus === 'saving'" key="saving" class="text-xs text-gray-400 flex items-center gap-2">
-                        <svg class="animate-spin h-4 w-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg class="animate-spin h-4 w-4 text-violet-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                         Menyimpan...
                     </span>
-                    <span v-else-if="saveStatus === 'saved'" key="saved" class="text-xs text-emerald-400 flex items-center gap-1">
+                    <span v-else-if="saveStatus === 'saved'" key="saved" class="text-xs text-cyan-400 flex items-center gap-1">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
@@ -398,8 +416,8 @@ onUnmounted(() => {
 
             <!-- Wajib Section -->
             <div>
-                <h3 class="text-xs uppercase tracking-wider font-bold text-emerald-400 mb-3 px-1 flex items-center gap-2">
-                    <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                <h3 class="text-xs uppercase tracking-wider font-bold text-cyan-400 mb-3 px-1 flex items-center gap-2">
+                    <span class="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
                     Ibadah Wajib
                 </h3>
                 <div class="space-y-2">
@@ -415,7 +433,7 @@ onUnmounted(() => {
                                 :src="item.icon"
                                 :trigger="form.tasks_completed[item.key] ? 'loop' : 'hover'"
                                 :delay="form.tasks_completed[item.key] ? '2000' : '0'"
-                                :colors="form.tasks_completed[item.key] ? 'primary:#34d399,secondary:#10b981' : 'primary:#9ca3af,secondary:#6b7280'"
+                                :colors="form.tasks_completed[item.key] ? 'primary:#22d3ee,secondary:#06b6d4' : 'primary:#9ca3af,secondary:#6b7280'"
                                 style="width:40px;height:40px">
                             </lord-icon>
                             <div class="text-left flex-1">
@@ -425,7 +443,7 @@ onUnmounted(() => {
                             <div 
                                 class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all"
                                 :class="form.tasks_completed[item.key] 
-                                    ? 'bg-emerald-500 border-emerald-500 text-white' 
+                                    ? 'bg-cyan-500 border-cyan-500 text-white'
                                     : 'border-gray-600'"
                             >
                                 <svg v-if="form.tasks_completed[item.key]" class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -439,8 +457,8 @@ onUnmounted(() => {
 
             <!-- Sunnah Section -->
             <div>
-                <h3 class="text-xs uppercase tracking-wider font-bold text-amber-400 mb-3 px-1 flex items-center gap-2">
-                    <span class="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></span>
+                <h3 class="text-xs uppercase tracking-wider font-bold text-rose-400 mb-3 px-1 flex items-center gap-2">
+                    <span class="w-2 h-2 bg-rose-400 rounded-full animate-pulse"></span>
                     Ibadah Sunnah
                 </h3>
                 <div class="grid grid-cols-3 gap-2">
@@ -455,14 +473,14 @@ onUnmounted(() => {
                             :src="item.icon"
                             :trigger="form.tasks_completed[item.key] ? 'loop' : 'hover'"
                             :delay="form.tasks_completed[item.key] ? '2000' : '0'"
-                            :colors="form.tasks_completed[item.key] ? 'primary:#fbbf24,secondary:#f59e0b' : 'primary:#9ca3af,secondary:#6b7280'"
+                            :colors="form.tasks_completed[item.key] ? 'primary:#fb7185,secondary:#f43f5e' : 'primary:#9ca3af,secondary:#6b7280'"
                             style="width:32px;height:32px">
                         </lord-icon>
                         <span class="text-[10px] font-medium text-white leading-tight mt-1">{{ item.label }}</span>
                         <div 
                             class="absolute top-1.5 right-1.5 w-3 h-3 rounded-full border flex items-center justify-center transition-all"
                             :class="form.tasks_completed[item.key] 
-                                ? 'bg-amber-500 border-amber-500' 
+                                ? 'bg-rose-500 border-rose-500'
                                 : 'border-gray-600'"
                         >
                             <svg v-if="form.tasks_completed[item.key]" class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -487,7 +505,7 @@ onUnmounted(() => {
 }
 
 .checkin-card-active {
-    @apply bg-emerald-500/20 border-emerald-500/30;
+    @apply bg-cyan-500/20 border-cyan-500/30;
 }
 
 .checkin-card-mini {
@@ -495,6 +513,6 @@ onUnmounted(() => {
 }
 
 .checkin-card-mini-active {
-    @apply bg-amber-500/20 border-amber-500/30;
+    @apply bg-rose-500/20 border-rose-500/30;
 }
 </style>

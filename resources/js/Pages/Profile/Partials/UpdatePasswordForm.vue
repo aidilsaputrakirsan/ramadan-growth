@@ -36,7 +36,7 @@ const updatePassword = () => {
             <lord-icon
                 src="https://cdn.lordicon.com/pdsourfn.json"
                 trigger="hover"
-                colors="primary:#34d399"
+                colors="primary:#a78bfa"
                 style="width:28px;height:28px">
             </lord-icon>
             <div>
@@ -88,7 +88,7 @@ const updatePassword = () => {
                 <button 
                     type="submit"
                     :disabled="form.processing"
-                    class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-xl transition-all active:scale-[0.98] disabled:opacity-50"
+                    class="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-medium rounded-xl transition-all active:scale-[0.98] disabled:opacity-50"
                 >
                     Update Password
                 </button>
@@ -98,7 +98,7 @@ const updatePassword = () => {
                     leave-active-class="transition ease-in duration-150"
                     leave-to-class="opacity-0"
                 >
-                    <span v-if="form.recentlySuccessful" class="text-sm text-emerald-400">✓ Tersimpan</span>
+                    <span v-if="form.recentlySuccessful" class="text-sm text-violet-400">✓ Tersimpan</span>
                 </Transition>
             </div>
         </form>
@@ -107,6 +107,6 @@ const updatePassword = () => {
 
 <style scoped>
 .dark-input {
-    @apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all;
+    @apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all;
 }
 </style>

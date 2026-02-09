@@ -18,14 +18,14 @@ defineProps<{
         <defs>
             <!-- Gradient untuk kubah masjid -->
             <linearGradient id="domeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color:#34d399"/>
-                <stop offset="100%" style="stop-color:#059669"/>
+                <stop offset="0%" style="stop-color:#a78bfa"/>
+                <stop offset="100%" style="stop-color:#7c3aed"/>
             </linearGradient>
             
             <!-- Gradient untuk bulan -->
             <linearGradient id="moonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#fcd34d"/>
-                <stop offset="100%" style="stop-color:#f59e0b"/>
+                <stop offset="0%" style="stop-color:#f9a8d4"/>
+                <stop offset="100%" style="stop-color:#ec4899"/>
             </linearGradient>
             
             <!-- Glow filter -->
@@ -58,7 +58,7 @@ defineProps<{
         <ellipse cx="32" cy="40" rx="14" ry="12" fill="url(#domeGradient)"/>
         
         <!-- Dome highlight -->
-        <ellipse cx="30" cy="36" rx="6" ry="4" fill="#6ee7b7" opacity="0.3"/>
+        <ellipse cx="30" cy="36" rx="6" ry="4" fill="#c4b5fd" opacity="0.3"/>
         
         <!-- Minaret left -->
         <rect x="12" y="32" width="5" height="20" rx="1" fill="url(#domeGradient)"/>
@@ -82,7 +82,7 @@ defineProps<{
         </g>
         
         <!-- Stars with twinkle animation -->
-        <g fill="#fcd34d" filter="url(#starGlow)">
+        <g fill="#e9d5ff" filter="url(#starGlow)">
             <circle cx="20" cy="16" r="1.2">
                 <template v-if="animated !== false">
                     <animate attributeName="opacity" values="0.4;1;0.4" dur="1.5s" repeatCount="indefinite"/>

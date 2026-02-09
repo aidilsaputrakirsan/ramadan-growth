@@ -25,7 +25,7 @@ watch(() => form.avatar, (newValue, oldValue) => {
             <lord-icon
                 src="https://cdn.lordicon.com/dxjqoygy.json"
                 trigger="hover"
-                colors="primary:#34d399"
+                colors="primary:#a78bfa"
                 style="width:28px;height:28px">
             </lord-icon>
             <div>
@@ -47,16 +47,16 @@ watch(() => form.avatar, (newValue, oldValue) => {
                 <lord-icon
                     src="https://cdn.lordicon.com/xjovhxra.json"
                     trigger="loop"
-                    colors="primary:#34d399"
+                    colors="primary:#a78bfa"
                     style="width:16px;height:16px">
                 </lord-icon>
                 Menyimpan...
             </div>
-            <div v-else-if="form.recentlySuccessful" class="mt-3 flex items-center gap-2 text-xs text-emerald-400">
+            <div v-else-if="form.recentlySuccessful" class="mt-3 flex items-center gap-2 text-xs text-violet-400">
                 <lord-icon
                     src="https://cdn.lordicon.com/egiwmiit.json"
                     trigger="in"
-                    colors="primary:#34d399"
+                    colors="primary:#a78bfa"
                     style="width:16px;height:16px">
                 </lord-icon>
                 Avatar tersimpan!
