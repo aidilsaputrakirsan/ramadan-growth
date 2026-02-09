@@ -88,6 +88,33 @@ const deleteUser = (user: AdminUser) => {
                 </div>
             </div>
 
+            <!-- Export Card -->
+            <div class="glass-card p-5 border-emerald-500/20 bg-emerald-500/5">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+                            <lord-icon
+                                src="https://cdn.lordicon.com/pdsourfn.json"
+                                trigger="loop"
+                                delay="3000"
+                                colors="primary:#10b981"
+                                style="width:24px;height:24px">
+                            </lord-icon>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold text-white">Laporan Aktivitas</h2>
+                            <p class="text-[10px] text-gray-400">Tarik data pengisian habit semua user ke Excel.</p>
+                        </div>
+                    </div>
+                    <a 
+                        :href="route('admin.users.export')"
+                        class="bg-emerald-500 hover:bg-emerald-400 text-white px-4 py-2 rounded-xl transition-all font-bold text-xs active:scale-95 shadow-lg shadow-emerald-500/20 flex items-center gap-2"
+                    >
+                        Export Excel
+                    </a>
+                </div>
+            </div>
+
             <!-- User List -->
             <div class="space-y-2">
                 <div

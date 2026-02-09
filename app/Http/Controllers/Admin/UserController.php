@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Exports\DailyLogsExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -70,5 +72,13 @@ class UserController extends Controller
         $user->delete();
 
         return back()->with('success', 'User deleted successfully.');
+    }
+
+    /**
+     * Export all daily logs to Excel.
+     */
+    public function export()
+    {
+        return Excel::download(new DailyLogsExport, 'ramadan_growth_logs_' . now()->format('Y-m-d_His') . '.xlsx');
     }
 }
