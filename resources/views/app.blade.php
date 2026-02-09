@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#020617">
 
     <title inertia>{{ config('app.name', 'Ramadan Tracker') }}</title>
     <meta name="description" content="Aplikasi tracking ibadah Ramadan - Catat shalat, puasa, tarawih, tilawah Al-Quran, dan amal sunnah lainnya.">

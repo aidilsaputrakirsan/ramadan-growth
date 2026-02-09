@@ -81,11 +81,7 @@ watch(progress, () => {
 
         <!-- Overlay Progress Text -->
         <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap">
-            <div class="glass-tag px-4 py-1.5 rounded-full flex items-center gap-2 border border-emerald-500/20 shadow-lg shadow-emerald-500/10">
-                <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Tingkat Kesuburan</span>
-                <span class="w-1 h-1 bg-white/20 rounded-full"></span>
-                <span class="text-xs text-white font-bold">{{ Math.round(progress * 100) }}%</span>
-            </div>
+            
         </div>
     </div>
 </template>

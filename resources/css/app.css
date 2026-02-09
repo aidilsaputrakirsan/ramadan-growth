@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html, body {
+        @apply bg-[#020617];
+        /* Ensure the overscroll background color matches our dark theme */
+        background-color: #020617;
+    }
+}
